@@ -1,0 +1,57 @@
+/* Estilo do header */
+header {
+    background-color: #2c3e50;
+    color: #fff;
+    padding: 20px 0;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo do título no header */
+header h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+/* Estilo da navegação */
+.nav-menu {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0 0;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+/* Estilo dos links */
+.nav-menu li a {
+    text-decoration: none;
+    color: #fff;
+    font-size: 18px;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Efeito hover nos links */
+.nav-menu li a:hover {
+    background-color: #1abc9c;
+    color: #fff;
+}
+
+/* Estilo específico para o botão de login */
+.nav-menu li .login-button {
+    background-color: #e74c3c;
+    color: #fff;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Efeito hover no botão de login */
+.nav-menu li .login-button:hover {
+    background-color: #c0392b;
+    color: #fff;
+}

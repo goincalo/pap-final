@@ -1,0 +1,33 @@
+/* Estilo geral */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+    color: #333;
+}
+
+/* Estilo do cabeçalho */
+h1 {
+    color: #2c3e50;
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Estilo do parágrafo */
+p {
+    text-align: center;
+    font-size: 18px;
+    line-height: 1.6;
+    margin: 10px 20px;
+}
+
+/* Estilo do container */
+.content {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
