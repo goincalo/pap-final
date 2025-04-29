@@ -1,9 +1,10 @@
 <?php
 // Conexão com a base de dados
 require(__DIR__ . '/config.php');
+include 'includes/header.php';
 
 // Inicia a sessão
-session_start();
+//session_start();
 
 // Verifica se o usuário está logado
 if (!isset($_SESSION['username'])) {

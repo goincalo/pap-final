@@ -124,7 +124,7 @@ if (isset($_SESSION['user'])) {
                         </ul>
                     </li>
                 <?php else: ?>
-                    <!-- Botões de Login e Registro para usuários não logados -->
+                    <!-- Botões de Login e Registo para u não logados -->
                     <li><a href="login.php" class="nav-button login-button">Login</a></li>
                     <li><a href="registo.php" class="nav-button login-button">Registo</a></li>
                 <?php endif; ?>

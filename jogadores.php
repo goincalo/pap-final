@@ -1,6 +1,7 @@
 <?php
 // Conexão com a base de dados
 require(__DIR__ . '/config.php');
+include 'includes/header.php';
 
 // Query com INNER JOIN para buscar os dados dos jogadores e seus clubes
 $sql = "SELECT 

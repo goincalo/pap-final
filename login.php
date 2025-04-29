@@ -29,6 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (password_verify($password, $user['senha'])) {
             // Login bem-sucedido
             $_SESSION['username'] = $username;
+            $_SESSION['cargo'] = strtolower(trim($utilizador['cargo'])); // Define o cargo na sessão
             header('Location: index.php'); // Redireciona para a página inicial
             exit;
         } else {

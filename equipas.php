@@ -1,7 +1,8 @@
 <?php
-session_start(); // Inicia a sessão
+// session_start(); // Inicia a sessão
 require(__DIR__ . '/config.php'); // Inclui a conexão com o banco de dados
 
+include 'includes/header.php';
 // Função para simplificar o controlo de cargo
 function cargoAtual() {
     return isset($_SESSION['cargo']) ? strtolower(trim($_SESSION['cargo'])) : null;
@@ -35,9 +36,7 @@ try {
 <div class="container mt-5">
     <h1 class="text-center mb-4">Lista de Equipas</h1>
 
-    <?php if (cargoAtual() === 'administrador'): ?>
-        <a href="adicionar_equipa.php" class="btn btn-success btn-sm" style="margin-bottom:20px">Adicionar Equipa</a>
-    <?php endif; ?>
+    <a href="adicionar_equipa.php" class="btn btn-success btn-sm" style="margin-bottom:20px">Adicionar Equipa</a>
 
     <hr>
     <table id="equipasTable" class="table table-striped table-bordered">
@@ -59,18 +58,10 @@ try {
                             <td>{$row['genero']}</td>
                             <td>{$row['tipo']}</td>
                             <td>{$row['created_at']}</td>
-                            <td>";
-
-                    if (cargoAtual() === 'administrador') {
-                        echo "<button class=\"btn btn-warning btn-sm editar\" data-id=\"{$row['id']}\">Editar</button>
-                              <button class=\"btn btn-danger btn-sm remover\" data-id=\"{$row['id']}\">Remover</button>";
-                    } else {
-                        echo "<span class=\"text-muted\">Sem permissões</span>";
-                    }
-
-                    echo "</td>
-                          </tr>";
-                }
+                            <td><button class=\"btn btn-warning btn-sm editar\" data-id=\"{$row['id']}\">Editar</button>
+                                <button class=\"btn btn-danger btn-sm remover\" data-id=\"{$row['id']}\">Remover</button>
+                            </td>";
+                            }
             } else {
                 echo "<tr><td colspan='5' class='text-center'>Sem dados para exibir</td></tr>";
             }

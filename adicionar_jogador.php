@@ -1,6 +1,7 @@
 <?php
 // Conexão com a base de dados
 require(__DIR__ . '/config.php');
+include 'includes/header.php';
 
 // Código para processar a adição do jogador via POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

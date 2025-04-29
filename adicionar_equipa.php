@@ -1,7 +1,7 @@
 <?php
 // Conexão com a base de dados
 require(__DIR__ . '/config.php');
-
+include 'includes/header.php';
 // Query para buscar os clubes existentes para preencher o campo id_clube no formulário
 $sql = "SELECT id, nome FROM clubes";
 try {
