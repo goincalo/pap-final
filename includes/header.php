@@ -98,6 +98,27 @@ if (isset($_SESSION['user'])) {
         .nav-button.login-button:hover {
             background-color: #e64a19; /* Vermelho mais escuro ao passar o mouse */
         }
+
+        /* Estilo para o botão Inscrever-se */
+        .nav-button.inscrever-button {
+            background-color: #ffc107; /* Amarelo */
+            color: #000; /* Texto preto */
+            padding: 10px 20px; /* Espaçamento interno */
+            text-decoration: none; /* Remove o sublinhado */
+            border-radius: 5px; /* Bordas arredondadas */
+            font-size: 16px; /* Tamanho do texto */
+            width: 120px; /* Largura fixa */
+            text-align: center; /* Centraliza o texto */
+            transition: background-color 0.3s ease; /* Efeito de transição */
+            margin: 5px; /* Espaçamento entre os botões */
+            height: 40px; /* Altura fixa para igualar aos outros botões */
+            line-height: 20px; /* Centraliza o texto verticalmente */
+        }
+
+        /* Efeito hover no botão Inscrever-se */
+        .nav-button.inscrever-button:hover {
+            background-color: #e0a800; /* Amarelo mais escuro ao passar o mouse */
+        }
     </style>
     <header>
         <h1>Gestão de Futebol</h1>
@@ -124,9 +145,11 @@ if (isset($_SESSION['user'])) {
                         </ul>
                     </li>
                 <?php else: ?>
-                    <!-- Botões de Login e Registo para u não logados -->
+                    <!-- Botões de Login, Registo e Inscrever-se para utilizadores não logados -->
                     <li><a href="login.php" class="nav-button login-button">Login</a></li>
                     <li><a href="registo.php" class="nav-button login-button">Registo</a></li>
+                    <li><a href="inscrever.php" class="nav-button inscrever-button">Inscrevete
+                    </a></li>
                 <?php endif; ?>
             </ul>
         </nav>
