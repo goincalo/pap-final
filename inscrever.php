@@ -48,11 +48,25 @@ include 'includes/header.php';
                                 <td>
                                     <select class="form-select" id="posicao" name="posicao" required>
                                         <option value="" disabled selected>Selecione a posição</option>
-                                        <option value="Goleiro">Goleiro</option>
+                                        <option value="Guarda-Redes">Guarda-Redes</option>
                                         <option value="Defesa">Defesa</option>
                                         <option value="Médio">Médio</option>
                                         <option value="Avançado">Avançado</option>
                                     </select>
+                                </td>
+                            </tr>
+                            <!-- Campo Contacto do Pai -->
+                            <tr>
+                                <td><label for="contacto_pai" class="form-label">Contacto do Responsável</label></td>
+                                <td>
+                                    <input type="tel" class="form-control" id="contacto_pai" name="contacto_pai" placeholder="Digite o contacto do pai" pattern="[0-9]{9}" required>
+                                </td>
+                            </tr>
+                            <!-- Campo Contacto do Atleta -->
+                            <tr>
+                                <td><label for="contacto_atleta" class="form-label">Contacto do Atleta</label></td>
+                                <td>
+                                    <input type="tel" class="form-control" id="contacto_atleta" name="contacto_atleta" placeholder="Digite o contacto do atleta" pattern="[0-9]{9}" required>
                                 </td>
                             </tr>
                         </tbody>
