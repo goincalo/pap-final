@@ -6,12 +6,6 @@ include 'includes/header.php';
 // Inicia a sessão
 //session_start();
 
-// Verifica se o usuário está logado
-if (!isset($_SESSION['username'])) {
-    header('Location: login.php');
-    exit();
-}
-
 // Query para buscar todos os dados da tabela jogos_eventos
 $sql = "SELECT id, titulo, descricao, caminho_imagem, created_at, updated_at FROM jogos_eventos";
 
