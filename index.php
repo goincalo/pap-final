@@ -31,7 +31,7 @@ include 'includes/header.php';
     ?>
     <div class="content">
         <h1>Bem-vindo ao Clube Manager</h1>
-        <p>Este é o seu site de gestão do clube.</p>
+       
     </div>
 
     <div id="eventCarousel" class="carousel slide" data-bs-ride="carousel">
