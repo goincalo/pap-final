@@ -57,8 +57,20 @@ try {
                 <label for="id_clube" class="form-label">Clube</label>
                 <select id="id_clube" name="id_clube" class="form-control" required>
                     <option value="">Selecione um clube</option>
-                    <option value="Viseu United">Viseu United</option>
+                    <?php foreach ($clubes as $clube): ?>
+                        <option value="<?php echo $clube['id']; ?>"><?php echo htmlspecialchars($clube['nome']); ?></option>
+                    <?php endforeach; ?>
                 </select>
+            </div>
+            <!-- Campo Nome do Treinador -->
+            <div class="mb-3">
+                <label for="nome_treinador" class="form-label">Nome do Treinador</label>
+                <input type="text" id="nome_treinador" name="nome_treinador" class="form-control" placeholder="Digite o nome do treinador" required>
+            </div>
+            <!-- Campo Contacto do Treinador -->
+            <div class="mb-3">
+                <label for="contacto_treinador" class="form-label">Contacto do Treinador</label>
+                <input type="tel" id="contacto_treinador" name="contacto_treinador" class="form-control" placeholder="Digite o contacto do treinador" pattern="[0-9]{9}" required>
             </div>
             <button type="submit" class="btn btn-primary">Adicionar Equipa</button>
         </form>

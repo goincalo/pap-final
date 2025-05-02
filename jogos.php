@@ -61,13 +61,10 @@ try {
                     <td><img src='public/Imagens/{$row['caminho_imagem']}' alt='Cartaz' style='max-width: 100px; height: auto;'></td>
                     <td>{$row['created_at']}</td>
                     <td>{$row['updated_at']}</td>
-                    <td>";
-                        // Exibe os botões apenas se for administrador
-                        if ($isAdmin) {
-                            echo "<button class='btn btn-warning btn-sm editar' data-id='{$row['id']}'>Editar</button>
-                      <button class='btn btn-danger btn-sm remover' data-id='{$row['id']}'>Remover</button>";
-                        }
-                        echo "</td>
+                    <td>
+                        <button class='btn btn-warning btn-sm editar' data-id='{$row['id']}'>Editar</button>
+                        <button class='btn btn-danger btn-sm remover' data-id='{$row['id']}'>Remover</button>
+                    </td>
                   </tr>";
                     }
                 } else {

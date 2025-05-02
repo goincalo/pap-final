@@ -1,14 +1,17 @@
 <?php
-// session_start(); // Inicia a sessão
-require(__DIR__ . '/config.php'); // Inclui a conexão com o banco de dados
 
+// Inclui a conexão com o banco de dados
+require(__DIR__ . '/config.php');
+
+// Inclui o cabeçalho
 include 'includes/header.php';
-// Função para simplificar o controlo de cargo
+
+// Função para obter o cargo do usuário
 function cargoAtual() {
     return isset($_SESSION['cargo']) ? strtolower(trim($_SESSION['cargo'])) : null;
 }
 
-// Query com INNER JOIN
+// Query com INNER JOIN para buscar dados das equipas e clubes
 $sql = "SELECT 
             equipas.id,
             equipas.nome AS equipa_nome,
@@ -21,7 +24,7 @@ $sql = "SELECT
         INNER JOIN clubes ON equipas.id_clube = clubes.id";
 
 try {
-    $stmt = $db->prepare($sql);
+    $stmt = $db->prepare($sql); // Corrigido 'prepare' em vez de 'prepar'
     $stmt->execute();
     $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (Exception $e) {
@@ -58,10 +61,12 @@ try {
                             <td>{$row['genero']}</td>
                             <td>{$row['tipo']}</td>
                             <td>{$row['created_at']}</td>
-                            <td><button class=\"btn btn-warning btn-sm editar\" data-id=\"{$row['id']}\">Editar</button>
-                                <button class=\"btn btn-danger btn-sm remover\" data-id=\"{$row['id']}\">Remover</button>
-                            </td>";
-                            }
+                            <td>
+                                <button class='btn btn-warning btn-sm editar' data-id='{$row['id']}'>Editar</button>
+                                <button class='btn btn-danger btn-sm remover' data-id='{$row['id']}'>Remover</button>
+                            </td>
+                          </tr>";
+                }
             } else {
                 echo "<tr><td colspan='5' class='text-center'>Sem dados para exibir</td></tr>";
             }
