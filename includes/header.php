@@ -185,9 +185,11 @@ if (isset($_SESSION['user'])) {
                 <li>
                     <a href="inscrever.php" class="nav-button inscrever-button">Inscreve-te</a>
                 </li>
-                <li>
-                    <a href="verinscricoes.php" class="nav-button">Ver Inscrições</a>
-                </li>
+                <?php if (isset($_SESSION['username'])): ?>
+                    <li>
+                        <a href="verinscricoes.php" class="nav-button">Ver Inscrições</a>
+                    </li>
+                <?php endif; ?>
                 <?php if (!isset($_SESSION['username'])): ?>
                     <!-- Botões de Login e Registo para utilizadores não logados -->
                     <li><a href="login.php" class="nav-button login-button">Login</a></li>
