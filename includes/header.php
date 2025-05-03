@@ -183,15 +183,13 @@ if (isset($_SESSION['user'])) {
                 <?php endif; ?>
                 <li><a href="jogos.php" class="nav-button">Eventos</a></li>
                 <li>
-                    <a href="#" class="nav-button" id="inscricaoDropdown" role="button" data-bs-toggle="dropdown"
-                        aria-expanded="false">Inscrições</a>
-                    <ul class="dropdown-menu" aria-labelledby="inscricaoDropdown">
-                    <?php if (isset($_SESSION['username'])): ?>
-                            <li><a href="inscricoes.php" class="btn btn-primary w-100 mb-2">Ver Inscrições</a></li>
-                        <li><a href="inscrever.php" class="btn btn-warning w-100">Inscreve-te</a></li>
-                    </ul>
+                    <a href="inscrever.php" class="nav-button inscrever-button">Inscreve-te</a>
                 </li>
-                <?php endif;?>
+                <?php if (!isset($_SESSION['username'])): ?>
+                    <!-- Botões de Login e Registo para utilizadores não logados -->
+                    <li><a href="login.php" class="nav-button login-button">Login</a></li>
+                    <li><a href="registo.php" class="nav-button login-button">Registar</a></li>
+                <?php endif; ?>
                 <?php if (isset($_SESSION['username'])): ?>
                     <!-- Dropdown para o usuário logado -->
                     <li class="nav-item dropdown">
@@ -209,10 +207,6 @@ if (isset($_SESSION['user'])) {
                             <li><a class="btn btn-danger" href="logout.php">Terminar Sessão</a></li>
                         </ul>
                     </li>
-                <?php else: ?>
-                    <!-- Botões de Login, Registo e Inscrever-se para utilizadores não logados -->
-                    <li><a href="login.php" class="nav-button login-button">Login</a></li>
-                    <li><a href="registo.php" class="nav-button login-button">Registo</a></li>
                 <?php endif; ?>
             </ul>
         </nav>
