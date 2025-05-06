@@ -40,7 +40,12 @@ try {
 <div class="container mt-5">
     <h1 class="text-center mb-4">Lista de Equipas</h1>
 
-    <a href="adicionar_equipa.php" class="btn btn-success btn-sm" style="margin-bottom:20px">Adicionar Equipa</a>
+    <?php
+    // Verifica se o usuário é administrador
+    $isAdmin = isset($_SESSION['cargo']) && $_SESSION['cargo'] === 'administrador';
+    if ($isAdmin): ?>
+        <a href="adicionar_equipa.php" class="btn btn-success btn-sm" style="margin-bottom:20px">Adicionar Equipa</a>
+    <?php endif; ?>
 
     <hr>
     <table id="equipasTable" class="table table-striped table-bordered">
@@ -55,10 +60,6 @@ try {
         </thead>
         <tbody>
         <?php
-            // Verifica se o usuário é administrador
-            $isAdmin = isset($_SESSION['cargo']) && $_SESSION['cargo'] === 'administrador';
-            ?>
-            <?php
             if (count($result) > 0) {
                 foreach ($result as $row) {
                     echo "<tr>
