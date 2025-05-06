@@ -2,7 +2,7 @@
 // Conexão com a base de dados
 require(__DIR__ . '/config.php');
 include 'includes/header.php';
- 
+
 // Query com INNER JOIN para buscar os dados dos jogadores e seus clubes
 $sql = "SELECT
             jogadores.id,
@@ -22,7 +22,7 @@ $sql = "SELECT
         INNER JOIN clubes ON jogadores.id_clube = clubes.id
         LEFT JOIN equipas ON jogadores.id_equipa = equipas.id
         WHERE clubes.nome = 'Viseu United'"; // Filtro para clubes com nome
- 
+
 try {
     // Prepare e execute a consulta usando PDO
     $link = connect_db('');
@@ -34,13 +34,20 @@ try {
     exit();
 }
 ?>
- 
+
 <link rel="stylesheet" href="includes/datatables/datatables.css">
 <link rel="stylesheet" href="public/bootstrap/css/bootstrap.min.css">
- 
+
 <div class="container mt-5">
     <h1 class="text-center mb-4">Lista de Jogadores</h1>
-    <a href="adicionar_jogador.php" class="btn btn-success btn-sm" style="margin-bottom:20px">Adicionar Jogador</a>
+
+    <?php
+    // Verifica se o usuário é administrador
+    $isAdmin = isset($_SESSION['cargo']) && $_SESSION['cargo'] === 'administrador';
+    if ($isAdmin): ?>
+        <a href="adicionar_jogador.php" class="btn btn-success btn-sm" style="margin-bottom:20px">Adicionar Jogador</a>
+    <?php endif; ?>
+
     <hr>
     <table id="jogadoresTable" class="table table-striped table-bordered">
         <thead class="table-dark">
@@ -57,11 +64,6 @@ try {
             </tr>
         </thead>
         <tbody>
- 
-        <?php
-            // Verifica se o usuário é administrador
-            $isAdmin = isset($_SESSION['cargo']) && $_SESSION['cargo'] === 'administrador';
-            ?>
             <?php
             if (count($result) > 0) {
                 foreach ($result as $row) {
@@ -74,22 +76,23 @@ try {
                                 <td>{$row['clube_nome']}</td>
                                 <td>{$row['equipa_nome']}</td>
                                 <td>{$row['created_at']}</td>
-                               
-<td>";
-                        // Exibe os botões apenas se for administrador
-                        if ($isAdmin) {
-                            echo "<button class='btn btn-warning btn-sm editar' data-id='{$row['id']}'>Editar</button>
-                      <button class='btn btn-danger btn-sm remover' data-id='{$row['id']}'>Remover</button>";
-                        }
-                        echo "</td>
-                  </tr>";
+                                <td>";
+                    // Exibe os botões apenas se for administrador
+                    if ($isAdmin) {
+                        echo "<button class='btn btn-warning btn-sm editar' data-id='{$row['id']}'>Editar</button>
+                              <button class='btn btn-danger btn-sm remover' data-id='{$row['id']}'>Remover</button>";
                     }
+                    echo "</td>
+                          </tr>";
+                }
             } else {
                 echo "<tr><td colspan='9' class='text-center'>Sem dados para exibir</td></tr>";
             }
             ?>
         </tbody>
     </table>
+
+    <!-- Modal de edição -->
     <div class="modal fade" id="editModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -117,33 +120,29 @@ try {
                             <input type="text" id="editGenero" name="genero" class="form-control" required>
                         </div>
                         <div class="mb-3">
-                            <div class="mb-3">
-                                <label for="editPosicao" class="form-label">Posição</label>
-                                <select id="editPosicao" name="id_posicao" class="form-control" required>
-                                    <option value="">Selecione uma posição</option>
-                                    <option value="1">Guarda-Redes</option>
-                                    <option value="2">Ponta de Lança</option>
-                                    <option value="3">Lateral Direito</option>
-                                    <option value="4">Lateral Esquerdo</option>
-                                    <option value="5">medio defensivo</option>
-                                    <option value="6">Meio campo</option>
-                                    <option value="7">Estremo Direito</option>
-                                    <option value="8">Estremo Esquerdo</option>
-                                    <option value="9">Atacante</option>
-                                    <option value="10">Defesa</option>
-                                </select>
-                            </div>
+                            <label for="editPosicao" class="form-label">Posição</label>
+                            <select id="editPosicao" name="id_posicao" class="form-control" required>
+                                <option value="">Selecione uma posição</option>
+                                <option value="1">Guarda-Redes</option>
+                                <option value="2">Ponta de Lança</option>
+                                <option value="3">Lateral Direito</option>
+                                <option value="4">Lateral Esquerdo</option>
+                                <option value="5">Médio Defensivo</option>
+                                <option value="6">Meio Campo</option>
+                                <option value="7">Extremo Direito</option>
+                                <option value="8">Extremo Esquerdo</option>
+                                <option value="9">Atacante</option>
+                                <option value="10">Defesa</option>
+                            </select>
                         </div>
                         <div class="mb-3">
                             <label for="editClube" class="form-label">Clube</label>
-                            <!-- Clube fixado como Viseu United -->
                             <select id="editClube" name="id_clube" class="form-control" required>
                                 <option value="1">Viseu United</option>
                             </select>
                         </div>
                         <div class="mb-3">
                             <label for="editEquipa" class="form-label">Equipa</label>
-                            <!-- Equipa com duas opções -->
                             <select id="editEquipa" name="id_equipa" class="form-control">
                                 <option value="1">Profissional</option>
                                 <option value="2">Em Formação</option>
@@ -156,7 +155,7 @@ try {
         </div>
     </div>
 </div>
- 
+
 <script src="public/JS/jquery.js"></script>
 <script src="includes/datatables/datatables.js"></script>
 <script src="public/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -169,10 +168,10 @@ try {
             responsive: true
         });
     });
- 
+
     $(document).on('click', '.remover', function () {
         let id = $(this).data('id');
- 
+
         if (confirm('Tem certeza que deseja remover este item?')) {
             $.ajax({
                 url: 'apagar_jogador.php',
@@ -190,10 +189,10 @@ try {
             });
         }
     });
- 
+
     $(document).on('click', '.editar', function () {
         let id = $(this).data('id');
- 
+
         // Busca os dados via AJAX
         $.ajax({
             url: 'get_jogador.php',
@@ -201,14 +200,14 @@ try {
             data: { id: id },
             success: function (response) {
                 let jogador = JSON.parse(response);
- 
+
                 // Preencha os campos no formulário
                 $('#editId').val(jogador.id);
                 $('#editFirstName').val(jogador.first_name);
                 $('#editLastName').val(jogador.last_name);
                 $('#editIdade').val(jogador.idade);
                 $('#editGenero').val(jogador.genero);
- 
+
                 // Mostre a modal após preencher os campos
                 $('#editModal').modal('show');
             },
@@ -217,12 +216,12 @@ try {
             }
         });
     });
- 
+
     $('#editForm').submit(function (e) {
         e.preventDefault();
- 
+
         console.log($(this).serialize()); // Exibe os dados que estão sendo enviados
- 
+
         $.ajax({
             url: 'editar_jogador.php',
             method: 'POST',

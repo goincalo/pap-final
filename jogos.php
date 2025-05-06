@@ -3,9 +3,6 @@
 require(__DIR__ . '/config.php');
 include 'includes/header.php';
 
-// Inicia a sessão
-//session_start();
-
 // Query para buscar todos os dados da tabela jogos_eventos
 $sql = "SELECT id, titulo, descricao, caminho_imagem, created_at, updated_at FROM jogos_eventos";
 
@@ -35,7 +32,14 @@ try {
 <body>
     <div class="container mt-5">
         <h1 class="text-center mb-4">Lista de Eventos</h1>
-        <a href="adicionar_jogo.php" class="btn btn-success btn-sm" style="margin-bottom:20px">Adicionar Evento</a>
+
+        <?php
+        // Verifica se o usuário é administrador
+        $isAdmin = isset($_SESSION['cargo']) && $_SESSION['cargo'] === 'administrador';
+        if ($isAdmin): ?>
+            <a href="adicionar_jogo.php" class="btn btn-success btn-sm" style="margin-bottom:20px">Adicionar Evento</a>
+        <?php endif; ?>
+
         <hr>
         <table id="jogosTable" class="table table-striped table-bordered">
             <thead class="table-dark">
@@ -48,35 +52,33 @@ try {
                     <th>Ações</th>
                 </tr>
             </thead>
-            <?php
-            // Verifica se o usuário é administrador
-            $isAdmin = isset($_SESSION['cargo']) && $_SESSION['cargo'] === 'administrador';
-            ?>
             <tbody>
                 <?php
                 if (count($result) > 0) {
                     foreach ($result as $row) {
                         echo "<tr>
-                    <td>{$row['titulo']}</td>
-                    <td>{$row['descricao']}</td>
-                    <td><img src='public/Imagens/{$row['caminho_imagem']}' alt='Cartaz' style='max-width: 100px; height: auto;'></td>
-                    <td>{$row['created_at']}</td>
-                    <td>{$row['updated_at']}</td>
-                    <td>";
+                                <td>{$row['titulo']}</td>
+                                <td>{$row['descricao']}</td>
+                                <td><img src='public/Imagens/{$row['caminho_imagem']}' alt='Cartaz' style='max-width: 100px; height: auto;'></td>
+                                <td>{$row['created_at']}</td>
+                                <td>{$row['updated_at']}</td>
+                                <td>";
 
-                    if ($isAdmin){
-                        echo "<button class='btn btn-warning btn-sm editar' data-id='{$row['id']}'>Editar</button>
-                        <button class='btn btn-danger btn-sm remover' data-id='{$row['id']}'>Remover</button>";
-                    }
-                    echo "</td>
-                  </tr>";
+                        if ($isAdmin) {
+                            echo "<button class='btn btn-warning btn-sm editar' data-id='{$row['id']}'>Editar</button>
+                                  <button class='btn btn-danger btn-sm remover' data-id='{$row['id']}'>Remover</button>";
+                        }
+                        echo "</td>
+                              </tr>";
                     }
                 } else {
-                    echo "<tr><td colspan='7' class='text-center'>Sem dados para exibir</td></tr>";
+                    echo "<tr><td colspan='6' class='text-center'>Sem dados para exibir</td></tr>";
                 }
                 ?>
             </tbody>
         </table>
+
+        <!-- Modal de edição -->
         <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -93,14 +95,11 @@ try {
                             </div>
                             <div class="mb-3">
                                 <label for="editDescricao" class="form-label">Descrição</label>
-                                <textarea id="editDescricao" name="descricao" class="form-control" rows="4"
-                                    required></textarea>
+                                <textarea id="editDescricao" name="descricao" class="form-control" rows="4" required></textarea>
                             </div>
                             <div class="mb-3">
-                                <label for="editCaminhoImagem" class="form-label">Cartaz do Evento (Nova Imagem -
-                                    Opcional)</label>
-                                <input type="file" id="editCaminhoImagem" name="caminho_imagem" class="form-control"
-                                    accept="image/*">
+                                <label for="editCaminhoImagem" class="form-label">Cartaz do Evento (Nova Imagem - Opcional)</label>
+                                <input type="file" id="editCaminhoImagem" name="caminho_imagem" class="form-control" accept="image/*">
                             </div>
                             <button type="submit" class="btn btn-primary">Salvar Alterações</button>
                         </form>
@@ -109,6 +108,7 @@ try {
             </div>
         </div>
     </div>
+
     <script src="public/JS/jquery.js"></script>
     <script src="includes/datatables/datatables.js"></script>
     <script src="public/bootstrap/js/bootstrap.bundle.min.js"></script>
