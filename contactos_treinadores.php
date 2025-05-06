@@ -11,8 +11,8 @@ include 'includes/header.php';
 
 <div class="container mt-4">
     <h2 class="text-center mb-4">Contactos dos Treinadores</h2>
-    <table id="treinadoresTable" class="table table-dark table-bordered display">
-        <thead class="table-dark">
+    <table id="treinadoresTable" class="table table-striped table-hover table-bordered">
+        <thead class="table-primary">
             <tr>
                 <th>Nome</th>
                 <th>Contacto</th>
@@ -41,7 +41,7 @@ include 'includes/header.php';
 
 <script>
     $(function () {
-        $('#equipasTable').DataTable({
+        $('#treinadoresTable').DataTable({
             language: {
                 url: "includes/datatables/langconfig.json"
             },
