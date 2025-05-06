@@ -24,7 +24,8 @@ $sql = "SELECT
         INNER JOIN clubes ON equipas.id_clube = clubes.id";
 
 try {
-    $stmt = $db->prepare($sql); // Corrigido 'prepare' em vez de 'prepar'
+    $link = connect_db();
+    $stmt = $link->prepare($sql); // Corrigido 'prepare' em vez de 'prepar'
     $stmt->execute();
     $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (Exception $e) {
@@ -53,6 +54,10 @@ try {
             </tr>
         </thead>
         <tbody>
+        <?php
+            // Verifica se o usuário é administrador
+            $isAdmin = isset($_SESSION['cargo']) && $_SESSION['cargo'] === 'administrador';
+            ?>
             <?php
             if (count($result) > 0) {
                 foreach ($result as $row) {
@@ -61,10 +66,13 @@ try {
                             <td>{$row['genero']}</td>
                             <td>{$row['tipo']}</td>
                             <td>{$row['created_at']}</td>
-                            <td>
-                                <button class='btn btn-warning btn-sm editar' data-id='{$row['id']}'>Editar</button>
-                                <button class='btn btn-danger btn-sm remover' data-id='{$row['id']}'>Remover</button>
-                            </td>
+                            <td>";
+
+                            if ($isAdmin) {
+                               echo "<button class='btn btn-warning btn-sm editar' data-id='{$row['id']}'>Editar</button>
+                                <button class='btn btn-danger btn-sm remover' data-id='{$row['id']}'>Remover</button>";
+                            }
+                            echo "</td>
                           </tr>";
                 }
             } else {

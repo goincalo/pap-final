@@ -170,7 +170,7 @@ if (isset($_SESSION['user'])) {
         <nav>
             <ul class="nav-menu">
                 <li><a href="index.php" class="nav-button">Início</a></li>
-                <?php if (isset($_SESSION['username'])): ?>
+                <?php if (isset($_SESSION['nome'])): ?>
                     <li>
                         <a class="nav-button" href="#" id="equipasDropdown" role="button"
                             data-bs-toggle="dropdown" aria-expanded="false">Equipas</a>
@@ -185,22 +185,22 @@ if (isset($_SESSION['user'])) {
                 <li>
                     <a href="inscrever.php" class="nav-button inscrever-button">Inscreve-te</a>
                 </li>
-                <?php if (isset($_SESSION['username'])): ?>
+                <?php if (isset($_SESSION['nome'])): ?>
                     <li>
                         <a href="verinscricoes.php" class="nav-button">Ver Inscrições</a>
                     </li>
                 <?php endif; ?>
-                <?php if (!isset($_SESSION['username'])): ?>
+                <?php if (!isset($_SESSION['nome'])): ?>
                     <!-- Botões de Login e Registo para utilizadores não logados -->
                     <li><a href="login.php" class="nav-button login-button">Login</a></li>
                     <li><a href="registo.php" class="nav-button login-button">Registar</a></li>
                 <?php endif; ?>
-                <?php if (isset($_SESSION['username'])): ?>
+                <?php if (isset($_SESSION['nome'])): ?>
                     <!-- Dropdown para o usuário logado -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                             data-bs-toggle="dropdown" aria-expanded="false">
-                            <?php echo htmlspecialchars($_SESSION['username']); ?>
+                            <?php echo htmlspecialchars($_SESSION['nome']); ?>
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="userDropdown">
                             <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin']): ?>

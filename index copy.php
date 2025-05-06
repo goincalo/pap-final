@@ -20,9 +20,8 @@ include 'includes/header.php';
     // Query para buscar os 3 eventos mais recentes
     $sql = "SELECT titulo, descricao, caminho_imagem FROM jogos_eventos ORDER BY created_at DESC LIMIT 3";
     try {
-
-        $link = connect_db();
         // Preparar e executar a consulta
+        $link = connect_db();
         $stmt = $link->prepare($sql);
         $stmt->execute();
         $eventos = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -33,7 +32,7 @@ include 'includes/header.php';
     ?>
     <div class="content">
         <h1>Bem-vindo ao Clube Manager</h1>
-        <p>Este é o seu site de gestão do clube.</p>
+       
     </div>
 
     <div id="eventCarousel" class="carousel slide" data-bs-ride="carousel">

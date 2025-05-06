@@ -11,7 +11,8 @@ $sql = "SELECT id, titulo, descricao, caminho_imagem, created_at, updated_at FRO
 
 try {
     // Prepare e execute a consulta usando PDO
-    $stmt = $db->prepare($sql);
+    $link = connect_db();
+    $stmt = $link->prepare($sql);
     $stmt->execute();
     $result = $stmt->fetchAll(PDO::FETCH_ASSOC); // Obtém os dados como array associativo
 } catch (Exception $e) {
@@ -61,10 +62,13 @@ try {
                     <td><img src='public/Imagens/{$row['caminho_imagem']}' alt='Cartaz' style='max-width: 100px; height: auto;'></td>
                     <td>{$row['created_at']}</td>
                     <td>{$row['updated_at']}</td>
-                    <td>
-                        <button class='btn btn-warning btn-sm editar' data-id='{$row['id']}'>Editar</button>
-                        <button class='btn btn-danger btn-sm remover' data-id='{$row['id']}'>Remover</button>
-                    </td>
+                    <td>";
+
+                    if ($isAdmin){
+                        echo "<button class='btn btn-warning btn-sm editar' data-id='{$row['id']}'>Editar</button>
+                        <button class='btn btn-danger btn-sm remover' data-id='{$row['id']}'>Remover</button>";
+                    }
+                    echo "</td>
                   </tr>";
                     }
                 } else {

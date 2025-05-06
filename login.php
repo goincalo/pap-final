@@ -1,48 +1,35 @@
 <?php
-// Inicia a sessão
 session_start();
-
-// Conexão com o banco de dados
-$conn = new mysqli('127.0.0.1', 'Gonçalo', '1234', 'club_manager'); // Substitua 'club_manager' pelo nome do seu banco de dados
-
-// Verifica a conexão
-if ($conn->connect_error) {
-    die("Erro de conexão: " . $conn->connect_error);
-}
-
-// Verifica se o formulário foi enviado
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = $conn->real_escape_string($_POST['username']);
-    $password = $conn->real_escape_string($_POST['password']);
-
-    // Consulta para verificar o usuário
-    $sql = "SELECT * FROM utilizadores WHERE nome = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $username);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows > 0) {
-        $user = $result->fetch_assoc();
-
+require(__DIR__ . '/config.php');
+ 
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $nome = $_POST["nome"];
+    $senha = $_POST["senha"];
+ 
+    $link = connect_db('');
+    $sql = "SELECT * FROM utilizadores WHERE nome = :nome";
+    $stmt = $link->prepare($sql);
+    $stmt->execute([":nome" => $nome]);
+ 
+    if ($stmt->rowCount() > 0) {
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+ 
         // Verifica a senha
-        if (password_verify($password, $user['senha'])) {
-            // Login bem-sucedido
-            $_SESSION['username'] = $username;
-            $_SESSION['cargo'] = strtolower(trim($utilizador['cargo'])); // Define o cargo na sessão
-            header('Location: index.php'); // Redireciona para a página inicial
+        if (password_verify($senha, $user['senha'])) {
+            $_SESSION['nome'] = $nome;
+            $_SESSION['cargo'] = strtolower(trim($user['cargo']));
+            header('Location: index.php');
             exit;
         } else {
-            // Senha incorreta
-            $error = "Usuário ou senha inválidos.";
+            $error = "Utilizador ou senha inválidos.";
         }
     } else {
-        // Usuário não encontrado
-        $error = "Usuário ou senha inválidos.";
+        $error = "Utilizador ou senha inválidos.";
     }
 }
+ 
 ?>
-
+ 
 <!DOCTYPE html>
 <html lang="pt">
 <head>
@@ -63,12 +50,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php endif; ?>
             <form method="POST" action="">
                 <div class="mb-3">
-                    <label for="username" class="form-label">Utilizador</label>
-                    <input type="text" class="form-control" id="username" name="username" required>
+                    <label for="nome" class="form-label">Utilizador</label>
+                    <input type="text" class="form-control" id="nome" name="nome" required>
                 </div>
                 <div class="mb-3">
                     <label for="password" class="form-label">Senha</label>
-                    <input type="password" class="form-control" id="password" name="password" required>
+                    <input type="password" class="form-control" id="senha" name="senha" required>
                 </div>
                 <button type="submit" class="btn btn-primary w-100">Entrar</button>
             </form>
@@ -78,3 +65,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+ 

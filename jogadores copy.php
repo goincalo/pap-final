@@ -2,9 +2,9 @@
 // Conexão com a base de dados
 require(__DIR__ . '/config.php');
 include 'includes/header.php';
- 
+
 // Query com INNER JOIN para buscar os dados dos jogadores e seus clubes
-$sql = "SELECT
+$sql = "SELECT 
             jogadores.id,
             jogadores.first_name,
             jogadores.last_name,
@@ -22,10 +22,10 @@ $sql = "SELECT
         INNER JOIN clubes ON jogadores.id_clube = clubes.id
         LEFT JOIN equipas ON jogadores.id_equipa = equipas.id
         WHERE clubes.nome = 'Viseu United'"; // Filtro para clubes com nome
- 
+
 try {
     // Prepare e execute a consulta usando PDO
-    $link = connect_db('');
+    $link = connect_db();
     $stmt = $link->prepare($sql);
     $stmt->execute();
     $result = $stmt->fetchAll(PDO::FETCH_ASSOC); // Obtém os dados como array associativo
@@ -34,10 +34,10 @@ try {
     exit();
 }
 ?>
- 
+
 <link rel="stylesheet" href="includes/datatables/datatables.css">
 <link rel="stylesheet" href="public/bootstrap/css/bootstrap.min.css">
- 
+
 <div class="container mt-5">
     <h1 class="text-center mb-4">Lista de Jogadores</h1>
     <a href="adicionar_jogador.php" class="btn btn-success btn-sm" style="margin-bottom:20px">Adicionar Jogador</a>
@@ -57,8 +57,8 @@ try {
             </tr>
         </thead>
         <tbody>
- 
-        <?php
+
+         <?php
             // Verifica se o usuário é administrador
             $isAdmin = isset($_SESSION['cargo']) && $_SESSION['cargo'] === 'administrador';
             ?>
@@ -74,16 +74,15 @@ try {
                                 <td>{$row['clube_nome']}</td>
                                 <td>{$row['equipa_nome']}</td>
                                 <td>{$row['created_at']}</td>
-                               
-<td>";
-                        // Exibe os botões apenas se for administrador
-                        if ($isAdmin) {
-                            echo "<button class='btn btn-warning btn-sm editar' data-id='{$row['id']}'>Editar</button>
-                      <button class='btn btn-danger btn-sm remover' data-id='{$row['id']}'>Remover</button>";
-                        }
-                        echo "</td>
-                  </tr>";
-                    }
+                                <td>";
+
+                                if  ($isAdmin){
+                                    echo "<button class='btn btn-warning btn-sm editar' data-id='{$row['id']}'>Editar</button>
+                                    <button class='btn btn-danger btn-sm remover' data-id='{$row['id']}'>Remover</button>";
+                                }
+                                echo "</td>
+                              </tr>";
+                            }
             } else {
                 echo "<tr><td colspan='9' class='text-center'>Sem dados para exibir</td></tr>";
             }
@@ -156,7 +155,7 @@ try {
         </div>
     </div>
 </div>
- 
+
 <script src="public/JS/jquery.js"></script>
 <script src="includes/datatables/datatables.js"></script>
 <script src="public/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -169,10 +168,10 @@ try {
             responsive: true
         });
     });
- 
+
     $(document).on('click', '.remover', function () {
         let id = $(this).data('id');
- 
+
         if (confirm('Tem certeza que deseja remover este item?')) {
             $.ajax({
                 url: 'apagar_jogador.php',
@@ -190,10 +189,10 @@ try {
             });
         }
     });
- 
+
     $(document).on('click', '.editar', function () {
         let id = $(this).data('id');
- 
+
         // Busca os dados via AJAX
         $.ajax({
             url: 'get_jogador.php',
@@ -201,14 +200,14 @@ try {
             data: { id: id },
             success: function (response) {
                 let jogador = JSON.parse(response);
- 
+
                 // Preencha os campos no formulário
                 $('#editId').val(jogador.id);
                 $('#editFirstName').val(jogador.first_name);
                 $('#editLastName').val(jogador.last_name);
                 $('#editIdade').val(jogador.idade);
                 $('#editGenero').val(jogador.genero);
- 
+
                 // Mostre a modal após preencher os campos
                 $('#editModal').modal('show');
             },
@@ -217,12 +216,12 @@ try {
             }
         });
     });
- 
+
     $('#editForm').submit(function (e) {
         e.preventDefault();
- 
+
         console.log($(this).serialize()); // Exibe os dados que estão sendo enviados
- 
+
         $.ajax({
             url: 'editar_jogador.php',
             method: 'POST',

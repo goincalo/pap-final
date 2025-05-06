@@ -1,9 +1,12 @@
 <?php
-include 'config.php'; // Inclui a configuração do banco de dados
+require(__DIR__ . '/config.php');
+include 'includes/header.php';
 
 // Consulta para obter todas as inscrições
+$link = connect_db();
 $sql = "SELECT * FROM inscricoes";
-$stmt = $db->query($sql);
+
+$stmt = $link->query($sql);
 
 // Verificar se há resultados
 $inscricoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -21,6 +24,12 @@ $inscricoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <body>
     <div class="container mt-5">
         <h1 class="text-center mb-4">Lista de Inscrições</h1>
+        
+        <?php
+            // Verifica se o usuário é administrador
+            $isAdmin = isset($_SESSION['cargo']) && $_SESSION['cargo'] === 'administrador';
+            ?>
+
         <?php if ($inscricoes): ?>
             <table id="inscricoesTable" class="table table-striped table-bordered">
                 <thead class="table-dark">
@@ -46,8 +55,17 @@ $inscricoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <td><?php echo htmlspecialchars($row["contacto_atleta"]); ?></td>
                             <td><?php echo htmlspecialchars($row["data_inscricao"]); ?></td>
                             <td>
-                                <button class="btn btn-danger btn-sm remover-inscricao" data-id="<?php echo $row['id']; ?>">Remover</button>
-                            </td>
+
+                            <?php
+                            if  ($isAdmin){
+                                echo "<button class='btn btn-danger btn-sm remover' data-id='{$row['id']}'>Remover</button>";
+                                
+                            echo "</td>
+                            </tr>";
+                        } else {
+                            echo "";
+                        }
+                        ?>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
