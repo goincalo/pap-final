@@ -116,19 +116,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="mb-3">
                 <label for="posicao" class="form-label">Posição</label>
                 <select id="posicao" name="posicao" class="form-control" required>
-                    <select id="editPosicao" name="posicao" class="form-control" required>
-                        <option value="">Selecione uma posição</option>
-                        <option value="1">Guarda-Redes</option>
-                        <option value="2">Ponta de Lança</option>
-                        <option value="3">Lateral Direito</option>
-                        <option value="4">Lateral Esquerdo</option>
-                        <option value="5">medio defensivo</option>
-                        <option value="6">Meio campo</option>
-                        <option value="7">Estremo Direito</option>
-                        <option value="8">Estremo Esquerdo</option>
-                        <option value="9">Atacante</option>
-                        <option value="10">Defesa</option>
-                    </select>
+                    <option value="">Selecione</option>
+                    <option value="Guarda-Redes">Guarda-Redes</option>
+                    <option value="Ponta de Lança">Ponta de Lança</option>
+                    <option value="Lateral Direito">Lateral Direito</option>
+                    <option value="Lateral Esquerdo">Lateral Esquerdo</option>
+                    <option value="Médio Defensivo">Médio Defensivo</option>
+                    <option value="Meio Campo">Meio Campo</option>
+                    <option value="Extremo Direito">Extremo Direito</option>
+                    <option value="Extremo Esquerdo">Extremo Esquerdo</option>
+                    <option value="Atacante">Atacante</option>
+                    <option value="Defesa">Defesa</option>
                 </select>
             </div>
             <div class="mb-3">
