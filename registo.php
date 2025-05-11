@@ -1,8 +1,12 @@
 <?php
-require(__DIR__ . '/config.php'); // Inclui o arquivo com a conexão PDO
+require(__DIR__ . '/config.php');
+
+// Inclui o cabeçalho
+include 'includes/header.php';
+
 
 // Inicia a sessão
-session_start();
+//session_start();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Obtém os dados do formulário
@@ -16,9 +20,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = "Todos os campos devem ser preenchidos.";
     } else {
         try {
+            $link = connect_db();
             // Verifica se o email já está registrado
             $sqlCheck = "SELECT COUNT(*) FROM utilizadores WHERE email = :email";
-            $stmtCheck = $pdo->prepare($sqlCheck);
+            $stmtCheck = $link->prepare($sqlCheck);
             $stmtCheck->execute([':email' => $email]);
             $emailExists = $stmtCheck->fetchColumn();
 
@@ -30,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 // Prepara a consulta para inserir os dados no banco de dados
                 $sql = "INSERT INTO utilizadores (nome, email, senha, cargo) VALUES (:nome, :email, :senha, :cargo)";
-                $stmt = $pdo->prepare($sql);
+                $stmt = $link->prepare($sql);
 
                 // Executa a consulta com os valores
                 $stmt->execute([
@@ -86,6 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <option value="">Selecione</option>
                             <option value="administrador">Administrador</option>
                             <option value="treinador">Treinador</option>
+                            <option valeu="utilizador">Utilizador</option>
                         </select>
                     </div>
                     <button type="submit" class="btn btn-primary w-100">Criar Conta</button>

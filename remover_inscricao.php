@@ -1,24 +1,25 @@
 <?php
-require 'config.php'; // Inclui a configuração do banco de dados
+require(__DIR__ . '/config.php');
 
+$link = connect_db();
 // Verifica se a requisição é do tipo POST
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Obtém o ID da inscrição enviado via POST
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
     $id = $_POST['id'];
 
     try {
         // Prepara a consulta para remover a inscrição
-        $stmt = $db->prepare("DELETE FROM inscricoes WHERE id = :id");
+        $stmt = $link->prepare("DELETE FROM inscricoes WHERE id = :id");
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
 
-        // Retorna uma resposta de sucesso em formato JSON
-        echo json_encode(['success' => true]);
+        if ($stmt->execute()) {
+            echo json_encode(['success' => true]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Erro ao apagar inscrição.']);
+        }
     } catch (Exception $e) {
-        // Retorna uma resposta de erro em formato JSON
-        echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+        echo json_encode(['success' => false, 'message' => 'Erro: ' . $e->getMessage()]);
     }
 } else {
-    // Retorna uma resposta de erro se o método não for POST
-    echo json_encode(['success' => false, 'message' => 'Método inválido.']);
+    echo json_encode(['success' => false, 'message' => 'ID não recebido ou método inválido.']);
 }

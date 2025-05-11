@@ -3,8 +3,9 @@ session_start();
 
 include 'config.php'; // Inclui a configuração do banco de dados
 
+$link = connect_db();
 // Verificar se a conexão com o banco de dados está disponível
-if (!isset($db)) {
+if (!isset($link)) {
     die("Erro: Conexão com o banco de dados não encontrada.");
 }
 
@@ -23,7 +24,7 @@ if (!$nome || !$idade || !$posicao || !$contacto_pai || !$contacto_atleta) {
 
 // Inserir dados na tabela usando a conexão do config.php
 $sql = "INSERT INTO inscricoes (nome, idade, posicao, contacto_pai, contacto_atleta) VALUES (:nome, :idade, :posicao, :contacto_pai, :contacto_atleta)";
-$stmt = $db->prepare($sql);
+$stmt = $link->prepare($sql);
 
 // Bind dos parâmetros
 $stmt->bindParam(':nome', $nome, PDO::PARAM_STR);

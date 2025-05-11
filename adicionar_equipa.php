@@ -1,11 +1,13 @@
 <?php
 // Conexão com a base de dados
-require(__DIR__ . '/config.php');
+require(__DIR__ . '/config.php'); // Certifique-se de que o caminho está correto
 include 'includes/header.php';
+
 // Query para buscar os clubes existentes para preencher o campo id_clube no formulário
 $sql = "SELECT id, nome FROM clubes";
 try {
-    $stmt = $db->prepare($sql);
+    $link = connect_db();
+    $stmt = $link->prepare($sql);
     $stmt->execute();
     $clubes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (Exception $e) {
@@ -33,7 +35,7 @@ try {
         <h1 class="text-center mb-4">Adicionar Nova Equipa</h1>
         <form action="salvar_equipa.php" method="POST">
             <div class="mb-3">
-                <label for="nome" class="form-label">Nome da Equipa</label>
+                <label for="nome" class="form-label">Escalão da Equipa</label>
                 <input type="text" id="nome" name="nome" class="form-control" required>
             </div>
             <div class="mb-3">
@@ -62,15 +64,13 @@ try {
                     <?php endforeach; ?>
                 </select>
             </div>
-            <!-- Campo Nome do Treinador -->
             <div class="mb-3">
                 <label for="nome_treinador" class="form-label">Nome do Treinador</label>
-                <input type="text" id="nome_treinador" name="nome_treinador" class="form-control" placeholder="Digite o nome do treinador" required>
+                <input type="text" id="nome_treinador" name="nome_treinador" class="form-control" required>
             </div>
-            <!-- Campo Contacto do Treinador -->
             <div class="mb-3">
                 <label for="contacto_treinador" class="form-label">Contacto do Treinador</label>
-                <input type="tel" id="contacto_treinador" name="contacto_treinador" class="form-control" placeholder="Digite o contacto do treinador" pattern="[0-9]{9}" required>
+                <input type="tel" id="contacto_treinador" name="contacto_treinador" class="form-control" pattern="[0-9]{9}" required>
             </div>
             <button type="submit" class="btn btn-primary">Adicionar Equipa</button>
         </form>

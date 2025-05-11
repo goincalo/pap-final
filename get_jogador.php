@@ -13,15 +13,13 @@ if (isset($_GET['id'])) {
                 jogadores.last_name,
                 jogadores.idade,
                 jogadores.genero,
-                jogadores.id_posicao,
+                jogadores.posicao,
                 jogadores.id_clube,
                 jogadores.id_equipa,
-                posicoes.nome AS posicao_nome,
                 clubes.nome AS clube_nome,
                 equipas.nome AS equipa_nome,
                 jogadores.created_at
             FROM jogadores
-            INNER JOIN posicoes ON jogadores.id_posicao = posicoes.id
             INNER JOIN clubes ON jogadores.id_clube = clubes.id
             LEFT JOIN equipas ON jogadores.id_equipa = equipas.id
             WHERE jogadores.id = :id";

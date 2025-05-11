@@ -29,37 +29,11 @@ if (isset($_SESSION['user'])) {
 
 <body>
     <style>
-        /* Estilo para o dropdown */
-        .dropdown-menu {
-            background-color: #343a40;
-            /* Fundo escuro */
-            border: none;
-        }
-
-        .dropdown-menu .dropdown-item {
-            color: #ffffff;
-            /* Texto branco */
-            transition: background-color 0.3s ease;
-        }
-
-        .dropdown-menu .dropdown-item:hover {
-            background-color: #495057;
-            /* Fundo cinza ao passar o mouse */
-        }
-
-        .dropdown-menu .dropdown-item.text-danger {
-            color: #dc3545;
-            /* Texto vermelho para "Terminar Sessão" */
-        }
-
-        .dropdown-menu .dropdown-item.text-danger:hover {
-            background-color: #bd2130;
-            /* Fundo vermelho escuro ao passar o mouse */
-        }
-
         /* Estilo para os botões do header */
         .nav-button {
-            display: inline-block;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             background-color: #007bff;
             /* Azul */
             color: #fff;
@@ -74,6 +48,8 @@ if (isset($_SESSION['user'])) {
             /* Tamanho do texto */
             width: 120px;
             /* Largura fixa */
+            height: 40px;
+            /* Altura fixa */
             text-align: center;
             /* Centraliza o texto */
             transition: background-color 0.3s ease;
@@ -88,81 +64,26 @@ if (isset($_SESSION['user'])) {
             /* Azul mais escuro */
         }
 
-        /* Alinhamento dos botões */
-        .nav-menu {
-            display: flex;
-            justify-content: center;
-            /* Centraliza os botões horizontalmente */
-            align-items: center;
-            /* Alinha os botões verticalmente */
-            list-style: none;
-            /* Remove os marcadores da lista */
-            padding: 0;
-            margin: 0;
-        }
-
-        /* Estilo para os botões de Login e Registo */
-        .nav-button.login-button {
-            background-color: #ff7043;
-            /* Vermelho claro meio para o laranja */
-            color: #fff;
-            /* Texto branco */
-            padding: 10px 20px;
-            /* Espaçamento interno */
-            text-decoration: none;
-            /* Remove o sublinhado */
-            border-radius: 5px;
-            /* Bordas arredondadas */
-            font-size: 16px;
-            /* Tamanho do texto */
-            width: 120px;
-            /* Largura fixa */
-            text-align: center;
-            /* Centraliza o texto */
-            transition: background-color 0.3s ease;
-            /* Efeito de transição */
-            margin: 5px;
-            /* Espaçamento entre os botões */
-        }
-
-        /* Efeito hover nos botões de Login e Registo */
-        .nav-button.login-button:hover {
-            background-color: #e64a19;
-            /* Vermelho mais escuro ao passar o mouse */
-        }
-
-        /* Estilo para o botão Inscrever-se */
+        /* Estilo para o botão "Inscreve-te" */
         .nav-button.inscrever-button {
             background-color: #ffc107;
             /* Amarelo */
             color: #000;
             /* Texto preto */
-            padding: 10px 20px;
-            /* Espaçamento interno */
-            text-decoration: none;
-            /* Remove o sublinhado */
-            border-radius: 5px;
-            /* Bordas arredondadas */
-            font-size: 16px;
-            /* Tamanho do texto */
-            width: 120px;
-            /* Largura fixa */
-            text-align: center;
-            /* Centraliza o texto */
-            transition: background-color 0.3s ease;
-            /* Efeito de transição */
-            margin: 5px;
-            /* Espaçamento entre os botões */
-            height: 40px;
-            /* Altura fixa para igualar aos outros botões */
-            line-height: 20px;
-            /* Centraliza o texto verticalmente */
         }
 
-        /* Efeito hover no botão Inscrever-se */
+        /* Efeito hover para o botão "Inscreve-te" */
         .nav-button.inscrever-button:hover {
             background-color: #e0a800;
-            /* Amarelo mais escuro ao passar o mouse */
+            /* Amarelo mais escuro */
+        }
+
+        /* Estilo para o botão "Ver Inscrições" */
+        .nav-button.ver-inscricoes-button {
+            height: 40px;
+            /* Altura fixa para igualar aos outros botões */
+            line-height: normal;
+            /* Remove o alinhamento vertical baseado em linha */
         }
     </style>
     <header>
@@ -187,7 +108,7 @@ if (isset($_SESSION['user'])) {
                 </li>
                 <?php if (isset($_SESSION['nome'])): ?>
                     <li>
-                        <a href="verinscricoes.php" class="nav-button">Ver Inscrições</a>
+                        <a href="verinscricoes.php" class="nav-button ver-inscricoes-button">Ver Inscrições</a>
                     </li>
                 <?php endif; ?>
                 <?php if (!isset($_SESSION['nome'])): ?>

@@ -148,7 +148,7 @@ try {
 
             // Enviar AJAX para buscar os dados do evento
             $.ajax({
-                url: 'get_jogo.php',
+                url: 'editar_jogo.php',
                 method: 'GET',
                 data: { id: id },
                 success: function (response) {

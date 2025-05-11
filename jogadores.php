@@ -4,28 +4,37 @@ require(__DIR__ . '/config.php');
 include 'includes/header.php';
 
 // Query com INNER JOIN para buscar os dados dos jogadores e seus clubes
-$sql = "SELECT
+
+$sql = "SELECT 
             jogadores.id,
             jogadores.first_name,
             jogadores.last_name,
             jogadores.idade,
             jogadores.genero,
-            jogadores.id_posicao,
+            jogadores.posicao,
             jogadores.id_clube,
             jogadores.id_equipa,
-            posicoes.nome AS posicao_nome,
             clubes.nome AS clube_nome,
             equipas.nome AS equipa_nome,
             jogadores.created_at
         FROM jogadores
-        INNER JOIN posicoes ON jogadores.id_posicao = posicoes.id
         INNER JOIN clubes ON jogadores.id_clube = clubes.id
-        LEFT JOIN equipas ON jogadores.id_equipa = equipas.id
-        WHERE clubes.nome = 'Viseu United'"; // Filtro para clubes com nome
+        LEFT JOIN equipas ON jogadores.id_equipa = equipas.id";
 
 try {
     // Prepare e execute a consulta usando PDO
-    $link = connect_db('');
+    $link = connect_db();
+
+    // Buscar as equipas para preencher o dropdown
+try {
+    $stmtEquipas = $link->query("SELECT id, nome FROM equipas");
+    $equipas = $stmtEquipas->fetchAll(PDO::FETCH_ASSOC);
+} catch (Exception $e) {
+    echo "Erro ao buscar equipas: " . $e->getMessage();
+    exit();
+}
+
+    
     $stmt = $link->prepare($sql);
     $stmt->execute();
     $result = $stmt->fetchAll(PDO::FETCH_ASSOC); // Obtém os dados como array associativo
@@ -40,14 +49,7 @@ try {
 
 <div class="container mt-5">
     <h1 class="text-center mb-4">Lista de Jogadores</h1>
-
-    <?php
-    // Verifica se o usuário é administrador
-    $isAdmin = isset($_SESSION['cargo']) && $_SESSION['cargo'] === 'administrador';
-    if ($isAdmin): ?>
-        <a href="adicionar_jogador.php" class="btn btn-success btn-sm" style="margin-bottom:20px">Adicionar Jogador</a>
-    <?php endif; ?>
-
+    <a href="adicionar_jogador.php" class="btn btn-success btn-sm" style="margin-bottom:20px">Adicionar Jogador</a>
     <hr>
     <table id="jogadoresTable" class="table table-striped table-bordered">
         <thead class="table-dark">
@@ -64,26 +66,32 @@ try {
             </tr>
         </thead>
         <tbody>
+
+            <?php
+            // Verifica se o usuário é administrador
+            $isAdmin = isset($_SESSION['cargo']) && $_SESSION['cargo'] === 'administrador';
+            ?>
             <?php
             if (count($result) > 0) {
                 foreach ($result as $row) {
                     echo "<tr>
-                                <td>{$row['first_name']}</td>
-                                <td>{$row['last_name']}</td>
-                                <td>{$row['idade']}</td>
-                                <td>{$row['genero']}</td>
-                                <td>{$row['posicao_nome']}</td>
-                                <td>{$row['clube_nome']}</td>
-                                <td>{$row['equipa_nome']}</td>
-                                <td>{$row['created_at']}</td>
-                                <td>";
+                            <td>{$row['first_name']}</td>
+                            <td>{$row['last_name']}</td>
+                            <td>{$row['idade']}</td>
+                            <td>{$row['genero']}</td>
+                            <td>{$row['posicao']}</td>
+                            <td>{$row['clube_nome']}</td>
+                            <td>" . (!empty($row['equipa_nome']) ? $row['equipa_nome'] : 'Nenhuma') . "</td>
+                            <td>{$row['created_at']}</td>
+                            <td>";
+
                     // Exibe os botões apenas se for administrador
                     if ($isAdmin) {
-                        echo "<button class='btn btn-warning btn-sm editar' data-id='{$row['id']}'>Editar</button>
-                              <button class='btn btn-danger btn-sm remover' data-id='{$row['id']}'>Remover</button>";
+                        echo "<button class='btn btn-warning btn-sm editar' data-id='{$row['id']}'>Editar</button></a>
+                      <button class='btn btn-danger btn-sm remover' data-id='{$row['id']}'>Remover</button>";
                     }
                     echo "</td>
-                          </tr>";
+                  </tr>";
                 }
             } else {
                 echo "<tr><td colspan='9' class='text-center'>Sem dados para exibir</td></tr>";
@@ -91,8 +99,6 @@ try {
             ?>
         </tbody>
     </table>
-
-    <!-- Modal de edição -->
     <div class="modal fade" id="editModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -116,37 +122,46 @@ try {
                             <input type="number" id="editIdade" name="idade" class="form-control" required>
                         </div>
                         <div class="mb-3">
-                            <label for="editGenero" class="form-label">Género</label>
-                            <input type="text" id="editGenero" name="genero" class="form-control" required>
+                            <select id="editGenero" name="genero" class="form-control" required>
+                                <option value="Masculino">Masculino</option>
+                                <option value="Feminino">Feminino</option>
+                                <option value="Outro">Outro</option>
+                            </select>
+
                         </div>
                         <div class="mb-3">
-                            <label for="editPosicao" class="form-label">Posição</label>
-                            <select id="editPosicao" name="id_posicao" class="form-control" required>
-                                <option value="">Selecione uma posição</option>
-                                <option value="1">Guarda-Redes</option>
-                                <option value="2">Ponta de Lança</option>
-                                <option value="3">Lateral Direito</option>
-                                <option value="4">Lateral Esquerdo</option>
-                                <option value="5">Médio Defensivo</option>
-                                <option value="6">Meio Campo</option>
-                                <option value="7">Extremo Direito</option>
-                                <option value="8">Extremo Esquerdo</option>
-                                <option value="9">Atacante</option>
-                                <option value="10">Defesa</option>
-                            </select>
+                            <div class="mb-3">
+                                <label for="editPosicao" class="form-label">Posição</label>
+                                <select id="posicao" name="posicao" class="form-control" required>
+                                    <option value="">Selecione uma posição</option>
+                                    <option>Guarda-Redes</option>
+                                    <option>Ponta de Lança</option>
+                                    <option>Lateral Direito</option>
+                                    <option>Lateral Esquerdo</option>
+                                    <option>medio defensivo</option>
+                                    <option>Meio campo</option>
+                                    <option>Estremo Direito</option>
+                                    <option>Estremo Esquerdo</option>
+                                    <option>Atacante</option>
+                                    <option>Defesa</option>
+                                </select>
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label for="editClube" class="form-label">Clube</label>
+                            <!-- Clube fixado como Viseu United -->
                             <select id="editClube" name="id_clube" class="form-control" required>
                                 <option value="1">Viseu United</option>
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="editEquipa" class="form-label">Equipa</label>
-                            <select id="editEquipa" name="id_equipa" class="form-control">
-                                <option value="1">Profissional</option>
-                                <option value="2">Em Formação</option>
-                            </select>
+                        <label for="equipa" class="form-label">Equipa</label>
+                        <select id="id_equipa" name="id_equipa" class="form-control">
+                        <?php foreach ($equipas as $equipa): ?>
+                            <option value="<?php echo $equipa['id']; ?>"><?php echo htmlspecialchars($equipa['nome']); ?></option>
+                        <?php endforeach; ?>
+
+                        </select>
                         </div>
                         <button type="submit" class="btn btn-primary">Salvar</button>
                     </form>
@@ -160,7 +175,7 @@ try {
 <script src="includes/datatables/datatables.js"></script>
 <script src="public/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script>
-    $(function () {
+    $(function() {
         $('#jogadoresTable').DataTable({
             language: {
                 url: "includes/datatables/langconfig.json"
@@ -169,15 +184,17 @@ try {
         });
     });
 
-    $(document).on('click', '.remover', function () {
+    $(document).on('click', '.remover', function() {
         let id = $(this).data('id');
 
         if (confirm('Tem certeza que deseja remover este item?')) {
             $.ajax({
                 url: 'apagar_jogador.php',
                 method: 'POST',
-                data: { id: id },
-                success: function (response) {
+                data: {
+                    id: id
+                },
+                success: function(response) {
                     let result = JSON.parse(response);
                     if (result.success) {
                         alert('Item removido com sucesso!');
@@ -190,15 +207,17 @@ try {
         }
     });
 
-    $(document).on('click', '.editar', function () {
+    $(document).on('click', '.editar', function() {
         let id = $(this).data('id');
 
         // Busca os dados via AJAX
         $.ajax({
-            url: 'get_jogador.php',
+            url: 'editar_jogador.php',
             method: 'GET',
-            data: { id: id },
-            success: function (response) {
+            data: {
+                id: id
+            },
+            success: function(response) {
                 let jogador = JSON.parse(response);
 
                 // Preencha os campos no formulário
@@ -211,13 +230,13 @@ try {
                 // Mostre a modal após preencher os campos
                 $('#editModal').modal('show');
             },
-            error: function () {
+            error: function() {
                 alert('Erro ao buscar dados do jogador.');
             }
         });
     });
 
-    $('#editForm').submit(function (e) {
+    $('#editForm').submit(function(e) {
         e.preventDefault();
 
         console.log($(this).serialize()); // Exibe os dados que estão sendo enviados
@@ -226,7 +245,7 @@ try {
             url: 'editar_jogador.php',
             method: 'POST',
             data: $(this).serialize(), // Envia todos os dados do formulário
-            success: function (response) {
+            success: function(response) {
                 let result = JSON.parse(response);
                 if (result.success) {
                     alert('Dados atualizados com sucesso!');
@@ -235,7 +254,7 @@ try {
                     alert('Erro ao atualizar: ' + result.message);
                 }
             },
-            error: function () {
+            error: function() {
                 alert('Erro ao enviar dados para o servidor.');
             }
         });

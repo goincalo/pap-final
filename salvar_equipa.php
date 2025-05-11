@@ -12,7 +12,8 @@ if (isset($_POST['nome'], $_POST['genero'], $_POST['tipo'], $_POST['id_clube']))
             VALUES (:nome, :genero, :tipo, :id_clube, NOW())";
 
     try {
-        $stmt = $db->prepare($sql);
+        $link = connect_db();
+         $stmt = $link->prepare($sql);
         $stmt->bindParam(':nome', $nome, PDO::PARAM_STR);
         $stmt->bindParam(':genero', $genero, PDO::PARAM_STR);
         $stmt->bindParam(':tipo', $tipo, PDO::PARAM_STR);

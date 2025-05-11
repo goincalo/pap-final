@@ -3,32 +3,66 @@
 require(__DIR__ . '/config.php');
 include 'includes/header.php';
 
+$sql = "SELECT 
+    e.id AS equipa_id,
+    e.nome AS equipa_nome,
+    c.id AS clube_id,
+    c.nome AS clube_nome
+FROM equipas e
+INNER JOIN clubes c ON e.id_clube = c.id";
+
+$link = connect_db();
+$stmt = $link->prepare($sql);
+$stmt->execute();
+$dados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Organizar os dados:
+$clubes = [];
+$equipas = [];
+
+foreach ($dados as $row) {
+    // Preencher clubes sem duplicar
+    if (!isset($clubes[$row['clube_id']])) {
+        $clubes[$row['clube_id']] = $row['clube_nome'];
+    }
+
+    // Preencher equipas
+    $equipas[] = [
+        'id' => $row['equipa_id'],
+        'nome' => $row['equipa_nome'],
+        'clube_id' => $row['clube_id']
+    ];
+}
+
+
 // Código para processar a adição do jogador via POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['first_name'], $_POST['last_name'], $_POST['idade'], $_POST['genero'], $_POST['id_posicao'], $_POST['id_clube'])) {
+    if (isset($_POST['first_name'], $_POST['last_name'], $_POST['idade'], $_POST['genero'], $_POST['posicao'], $_POST['id_clube'])) {
         $first_name = htmlspecialchars($_POST['first_name']);
         $last_name = htmlspecialchars($_POST['last_name']);
         $idade = $_POST['idade'];
         $genero = htmlspecialchars($_POST['genero']);
-        $id_posicao = $_POST['id_posicao'];
+        $posicao = $_POST['posicao'];
         $id_clube = $_POST['id_clube'];
         $id_equipa = $_POST['id_equipa'] ?? NULL; // `id_equipa` é opcional e pode ser NULL
 
         // Validações adicionais
-        if (!is_numeric($idade) || !is_numeric($id_posicao) || !is_numeric($id_clube)) {
+        if (!is_numeric($idade) || !is_numeric($id_clube)) {
             echo "<div class='alert alert-danger'>Parâmetros inválidos</div>";
         } else {
+
+            $link = connect_db();
             // Query para adicionar o jogador
-            $sql = "INSERT INTO jogadores (first_name, last_name, idade, genero, id_posicao, id_clube, id_equipa, created_at) 
-                    VALUES (:first_name, :last_name, :idade, :genero, :id_posicao, :id_clube, :id_equipa, NOW())";
+            $sql = "INSERT INTO jogadores (first_name, last_name, idade, genero, posicao, id_clube, id_equipa, created_at) 
+                    VALUES (:first_name, :last_name, :idade, :genero, :posicao, :id_clube, :id_equipa, NOW())";
 
             try {
-                $stmt = $db->prepare($sql);
+                $stmt = $link->prepare($sql);
                 $stmt->bindParam(':first_name', $first_name, PDO::PARAM_STR);
                 $stmt->bindParam(':last_name', $last_name, PDO::PARAM_STR);
                 $stmt->bindParam(':idade', $idade, PDO::PARAM_INT);
                 $stmt->bindParam(':genero', $genero, PDO::PARAM_STR);
-                $stmt->bindParam(':id_posicao', $id_posicao, PDO::PARAM_INT);
+                $stmt->bindParam(':posicao', $posicao, PDO::PARAM_STR);
                 $stmt->bindParam(':id_clube', $id_clube, PDO::PARAM_INT);
                 $stmt->bindParam(':id_equipa', $id_equipa, PDO::PARAM_INT);
                 $stmt->execute();
@@ -46,12 +80,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <!DOCTYPE html>
 <html lang="pt">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Adicionar Jogador</title>
     <link rel="stylesheet" href="public/bootstrap/css/bootstrap.min.css">
 </head>
+
 <body>
     <div class="container mt-5">
         <h1 class="text-center mb-4">Adicionar Novo Jogador</h1>
@@ -79,32 +115,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="mb-3">
                 <label for="posicao" class="form-label">Posição</label>
-                <select id="posicao" name="id_posicao" class="form-control" required>
-                    <option value="">Selecione uma posição</option>
-                    <option value="1">Goleiro</option>
-                    <option value="2">Zagueiro</option>
-                    <option value="3">Lateral Direito</option>
-                    <option value="4">Lateral Esquerdo</option>
-                    <option value="5">Volante</option>
-                    <option value="6">Meia</option>
-                    <option value="7">Ponta Direita</option>
-                    <option value="8">Ponta Esquerda</option>
-                    <option value="9">Atacante</option>
-                    <option value="10">Centroavante</option>
+                <select id="posicao" name="posicao" class="form-control" required>
+                    <select id="editPosicao" name="posicao" class="form-control" required>
+                        <option value="">Selecione uma posição</option>
+                        <option value="1">Guarda-Redes</option>
+                        <option value="2">Ponta de Lança</option>
+                        <option value="3">Lateral Direito</option>
+                        <option value="4">Lateral Esquerdo</option>
+                        <option value="5">medio defensivo</option>
+                        <option value="6">Meio campo</option>
+                        <option value="7">Estremo Direito</option>
+                        <option value="8">Estremo Esquerdo</option>
+                        <option value="9">Atacante</option>
+                        <option value="10">Defesa</option>
+                    </select>
                 </select>
             </div>
             <div class="mb-3">
                 <label for="clube" class="form-label">Clube</label>
-                <select id="clube" name="id_clube" class="form-control" required>
-                    <option value="1">Viseu United</option>
+                <select id="id_clube" name="id_clube" class="form-control" required>
+                    <option value="">Selecione um clube</option>
+                    <?php foreach ($clubes as $id => $nome): ?>
+                        <option value="<?= $id ?>"><?= htmlspecialchars($nome) ?></option>
+                    <?php endforeach; ?>
+
                 </select>
             </div>
             <div class="mb-3">
                 <label for="equipa" class="form-label">Equipa</label>
                 <select id="equipa" name="id_equipa" class="form-control">
-                    <option value="">Nenhuma</option>
-                    <option value="1">Profissional</option>
-                    <option value="2">Em Formação</option>
+                    <?php foreach ($equipas as $equipa): ?>
+                        <option value="<?= $equipa['id'] ?>" data-clube="<?= $equipa['clube_id'] ?>">
+                            <?= htmlspecialchars($equipa['nome']) ?>
+                        </option>
+                    <?php endforeach; ?>
                 </select>
             </div>
             <button type="submit" class="btn btn-primary">Adicionar Jogador</button>
@@ -112,4 +156,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
     <script src="public/bootstrap/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

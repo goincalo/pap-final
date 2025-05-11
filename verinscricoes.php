@@ -14,6 +14,7 @@ $inscricoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <!DOCTYPE html>
 <html lang="pt">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,14 +22,15 @@ $inscricoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="public/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="includes/datatables/datatables.css">
 </head>
+
 <body>
     <div class="container mt-5">
         <h1 class="text-center mb-4">Lista de Inscrições</h1>
-        
+
         <?php
-            // Verifica se o usuário é administrador
-            $isAdmin = isset($_SESSION['cargo']) && $_SESSION['cargo'] === 'administrador';
-            ?>
+        // Verifica se o usuário é administrador
+        $isAdmin = isset($_SESSION['cargo']) && $_SESSION['cargo'] === 'administrador';
+        ?>
 
         <?php if ($inscricoes): ?>
             <table id="inscricoesTable" class="table table-striped table-bordered">
@@ -56,16 +58,16 @@ $inscricoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <td><?php echo htmlspecialchars($row["data_inscricao"]); ?></td>
                             <td>
 
-                            <?php
-                            if  ($isAdmin){
-                                echo "<button class='btn btn-danger btn-sm remover' data-id='{$row['id']}'>Remover</button>";
-                                
-                            echo "</td>
+                                <?php
+                                if ($isAdmin) {
+                                    echo "<button class='btn btn-danger btn-sm remover' data-id='{$row['id']}'>Remover</button>";
+
+                                    echo "</td>
                             </tr>";
-                        } else {
-                            echo "";
-                        }
-                        ?>
+                                } else {
+                                    echo "<tr><td colspan='9' class='text-center'>Sem dados para exibir</td></tr>";
+                                }
+                                ?>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
@@ -79,7 +81,7 @@ $inscricoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <script src="includes/datatables/datatables.js"></script>
     <script src="public/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script>
-        $(document).ready(function () {
+        $(document).ready(function() {
             $('#inscricoesTable').DataTable({
                 language: {
                     url: "includes/datatables/langconfig.json" // Configuração de idioma
@@ -88,15 +90,17 @@ $inscricoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
             });
 
             // Função para remover inscrição
-            $(document).on('click', '.remover-inscricao', function () {
+            $(document).on('click', '.remover', function() {
                 let id = $(this).data('id');
 
                 if (confirm('Tem certeza que deseja remover esta inscrição?')) {
                     $.ajax({
                         url: 'remover_inscricao.php', // Arquivo para processar a remoção
                         method: 'POST',
-                        data: { id: id },
-                        success: function (response) {
+                        data: {
+                            id: id
+                        },
+                        success: function(response) {
                             let result = JSON.parse(response);
                             if (result.success) {
                                 alert('Inscrição removida com sucesso!');
@@ -105,7 +109,7 @@ $inscricoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 alert('Erro ao remover inscrição: ' + result.message);
                             }
                         },
-                        error: function () {
+                        error: function() {
                             alert('Erro ao processar a solicitação.');
                         }
                     });
@@ -114,4 +118,5 @@ $inscricoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
         });
     </script>
 </body>
+
 </html>

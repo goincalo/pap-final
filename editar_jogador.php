@@ -1,64 +1,68 @@
 <?php
-// Conexão com a base de dados
 require(__DIR__ . '/config.php');
 
-// Verifica se os parâmetros necessários foram enviados via POST
-if (isset($_POST['id'], $_POST['first_name'], $_POST['last_name'], $_POST['idade'], $_POST['genero'], $_POST['id_posicao'], $_POST['id_clube'])) {
-    $id = $_POST['id'];
-    $first_name = htmlspecialchars($_POST['first_name']);
-    $last_name = htmlspecialchars($_POST['last_name']);
-    $idade = $_POST['idade'];
-    $genero = htmlspecialchars($_POST['genero']);
-    $id_posicao = $_POST['id_posicao'];
-    $id_clube = $_POST['id_clube'];
-    $id_equipa = isset($_POST['id_equipa']) && is_numeric($_POST['id_equipa']) ? $_POST['id_equipa'] : NULL;
+$link = connect_db('');
 
-    // Validações adicionais
-    if (!is_numeric($id) || !is_numeric($idade) || !is_numeric($id_posicao) || !is_numeric($id_clube)) {
-        echo json_encode(['success' => false, 'message' => 'Parâmetros inválidos']);
-        exit();
-    }
-
-    // Query para atualizar os dados do jogador
-    $sql = "UPDATE jogadores 
-            SET first_name = :first_name, 
-                last_name = :last_name, 
-                idade = :idade, 
-                genero = :genero, 
-                id_posicao = :id_posicao, 
-                id_clube = :id_clube, 
-                id_equipa = :id_equipa, 
-                updated_at = NOW()
-            WHERE id = :id";
-
+// Verifica se é uma requisição GET (buscar dados do jogador)
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id'])) {
+    $id = $_GET['id'];
     try {
-        $stmt = $db->prepare($sql);
+        $stmt = $link->prepare("SELECT * FROM jogadores WHERE id = :id");
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->bindParam(':first_name', $first_name, PDO::PARAM_STR);
-        $stmt->bindParam(':last_name', $last_name, PDO::PARAM_STR);
-        $stmt->bindParam(':idade', $idade, PDO::PARAM_INT);
-        $stmt->bindParam(':genero', $genero, PDO::PARAM_STR);
-        $stmt->bindParam(':id_posicao', $id_posicao, PDO::PARAM_INT);
-        $stmt->bindParam(':id_clube', $id_clube, PDO::PARAM_INT);
-        $stmt->bindParam(':id_equipa', $id_equipa, PDO::PARAM_INT);
         $stmt->execute();
+        $jogador = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        // Verifica se a atualização afetou alguma linha
-        if ($stmt->rowCount() > 0) {
-            echo json_encode(['success' => true]);
+        if ($jogador) {
+            echo json_encode($jogador);
         } else {
-            echo json_encode(['success' => false, 'message' => 'Nenhuma alteração foi feita']);
+            echo json_encode(['success' => false, 'message' => 'Jogador não encontrado']);
         }
     } catch (Exception $e) {
-        // Registra o erro e retorna uma mensagem genérica
-        error_log('Erro no editar_jogador.php: ' . $e->getMessage());
-        echo json_encode(['success' => false, 'message' => 'Erro interno ao atualizar os dados']);
+        echo json_encode(['success' => false, 'message' => 'Erro: ' . $e->getMessage()]);
     }
-} else {
-    // Retorna erro caso os parâmetros obrigatórios não tenham sido enviados
-    echo json_encode(['success' => false, 'message' => 'Parâmetros insuficientes fornecidos']);
+    exit;
 }
-?>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
+// Verifica se é uma requisição POST (atualizar jogador)
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $id = $_POST['id'] ?? null;
+    $first_name = $_POST['first_name'] ?? '';
+    $last_name = $_POST['last_name'] ?? '';
+    $idade = $_POST['idade'] ?? null;
+    $genero = $_POST['genero'] ?? '';
+    $posicao = $_POST['posicao'] ?? null;
+    $id_equipa = $_POST['id_equipa'] ?? null;
+
+    if (!$id || !$first_name || !$last_name || !$idade || !$genero || !$posicao || !$id_equipa) {
+        echo json_encode(['success' => false, 'message' => 'Parâmetros inválidos.']);
+        exit;
+    }
+
+    try {
+        $stmt = $link->prepare("UPDATE jogadores SET 
+            first_name = :first_name,
+            last_name = :last_name,
+            idade = :idade,
+            genero = :genero,
+            posicao = :posicao,
+            id_equipa = :id_equipa
+        WHERE id = :id");
+
+        $stmt->bindParam(':first_name', $first_name);
+        $stmt->bindParam(':last_name', $last_name);
+        $stmt->bindParam(':idade', $idade, PDO::PARAM_INT);
+        $stmt->bindParam(':genero', $genero);
+        $stmt->bindParam(':posicao', $posicao);
+        $stmt->bindParam(':id_equipa', $id_equipa, PDO::PARAM_INT);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+
+        if ($stmt->execute()) {
+            echo json_encode(['success' => true]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Erro ao atualizar.']);
+        }
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'message' => 'Erro: ' . $e->getMessage()]);
+    }
+    exit;
+}

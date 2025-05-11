@@ -153,7 +153,7 @@ $(document).on('click', '.editar', function () {
     let id = $(this).data('id');
 
     $.ajax({
-        url: 'get_equipas.php',
+        url: 'editar_equipa.php',
         method: 'GET',
         data: { id: id },
         success: function (response) {

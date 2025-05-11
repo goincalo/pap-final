@@ -3,9 +3,9 @@ require(__DIR__ . '/config.php'); // Certifique-se de que a conexão com o banco
 
 if (isset($_POST['id'], $_POST['nome'], $_POST['genero'], $_POST['tipo'])) {
     $id = $_POST['id'];
-    $nome = $_POST['nome'];
-    $genero = $_POST['genero'];
-    $tipo = $_POST['tipo'];
+    $nome = htmlspecialchars($_POST['nome']);
+    $genero = htmlspecialchars($_POST['genero']);
+    $tipo = htmlspecialchars($_POST['tipo']);
 
     $sql = "UPDATE equipas 
             SET nome = :nome, 

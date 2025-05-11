@@ -1,6 +1,10 @@
 <?php
-session_start();
+//session_start();
 require(__DIR__ . '/config.php');
+
+// Inclui o cabeçalho
+include 'includes/header.php';
+
  
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nome = $_POST["nome"];
