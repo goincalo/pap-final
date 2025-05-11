@@ -1,7 +1,12 @@
 <?php
+ob_start(); // Inicia o buffer de saída
+
 // Conexão com a base de dados
 require(__DIR__ . '/config.php');
 include 'includes/header.php';
+
+// Certifique-se de que a conexão com o banco de dados está sendo criada
+$conexao = connect_db(); // Adicione esta linha para inicializar a conexão
 
 // Verifica se os dados foram enviados via POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -71,6 +76,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <button type="submit" class="btn btn-primary">Adicionar Evento</button>
         </form>
     </div>
-    <script src="public/bootstrap/js/bootstrap.bundle.min.js"></script>
+</html>ript src="public/bootstrap/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
