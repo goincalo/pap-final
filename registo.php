@@ -26,9 +26,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmtCheck = $link->prepare($sqlCheck);
             $stmtCheck->execute([':email' => $email]);
             $emailExists = $stmtCheck->fetchColumn();
+            
+            $sqlCheckNome = "SELECT COUNT(*) FROM utilizadores WHERE nome = :nome";
+            $stmtCheckNome = $link->prepare($sqlCheckNome);
+            $stmtCheckNome->execute([':nome' => $nome]);
+            $nomeExists = $stmtCheckNome->fetchColumn();
 
             if ($emailExists) {
-                $error = "O email já está registrado. Por favor, use outro.";
+                $error = "O email já está registado. Por favor, use outro.";
+            } elseif ($nomeExists) {
+                $error = "O nome de utilizador já está registado. Por favor, escolha outro.";
             } else {
                 // Criptografa a senha
                 $hashedSenha = password_hash($senha, PASSWORD_DEFAULT);
@@ -74,8 +81,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php endif; ?>
                 <form method="POST" action="">
                     <div class="mb-3">
-                        <label for="nome" class="form-label">Nome de utilizador</label>
-                        <input type="text" name="nome" id="nome" class="form-control" required>
+                        <label for="nome" class="form-label">Nome de Utilizador</label>
+                        <input type="text" name="nome" id="nome" class="form-control" required pattern="^\S+$" title="O nome de utilizador deve conter apenas uma palavra, sem espaços.">
                     </div>
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
