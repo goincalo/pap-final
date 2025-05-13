@@ -51,7 +51,7 @@ try {
     <table id="equipasTable" class="table table-striped table-bordered">
         <thead class="table-dark">
             <tr>
-                <th>Nome da Equipa</th>
+                <th>Escalão da Equipa</th>
                 <th>Género</th>
                 <th>Tipo</th>
                 <th>Data de Criação</th>
@@ -95,16 +95,25 @@ try {
                     <form id="editForm">
                         <input type="hidden" id="editId" name="id">
                         <div class="mb-3">
-                            <label for="editNome" class="form-label">Nome</label>
+                            <label for="editNome" class="form-label">Escalão</label>
                             <input type="text" id="editNome" name="nome" class="form-control" required>
                         </div>
                         <div class="mb-3">
                             <label for="editGenero" class="form-label">Género</label>
-                            <input type="text" id="editGenero" name="genero" class="form-control" required>
+                             <select id="genero" name="genero" class="form-control" required>
+                                <option value="">Selecione</option>
+                                <option value="Masculino">Masculino</option>
+                                <option value="Feminino">Feminino</option>
+                                <option value="Outro">Outro</option>
+                            </select>
                         </div>
                         <div class="mb-3">
                             <label for="editTipo" class="form-label">Tipo</label>
-                            <input type="text" id="editTipo" name="tipo" class="form-control" required>
+                            <select id="tipo" name="tipo" class="form-control" required>
+                                <option value="">Selecione</option>
+                                <option value="Profissional">Profissional</option>
+                                <option value="Em Formação">Em Formação</option>
+                            </select>
                         </div>
                         <button type="submit" class="btn btn-primary">Salvar</button>
                     </form>

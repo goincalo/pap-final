@@ -17,15 +17,9 @@ $stmt->execute();
 $dados = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Organizar os dados:
-$clubes = [];
 $equipas = [];
 
 foreach ($dados as $row) {
-    // Preencher clubes sem duplicar
-    if (!isset($clubes[$row['clube_id']])) {
-        $clubes[$row['clube_id']] = $row['clube_nome'];
-    }
-
     // Preencher equipas
     $equipas[] = [
         'id' => $row['equipa_id'],
@@ -34,27 +28,24 @@ foreach ($dados as $row) {
     ];
 }
 
-
 // Código para processar a adição do jogador via POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['first_name'], $_POST['last_name'], $_POST['idade'], $_POST['genero'], $_POST['posicao'], $_POST['id_clube'])) {
+    if (isset($_POST['first_name'], $_POST['last_name'], $_POST['idade'], $_POST['genero'], $_POST['posicao'], $_POST['id_equipa'])) {
         $first_name = htmlspecialchars($_POST['first_name']);
         $last_name = htmlspecialchars($_POST['last_name']);
         $idade = $_POST['idade'];
         $genero = htmlspecialchars($_POST['genero']);
         $posicao = $_POST['posicao'];
-        $id_clube = $_POST['id_clube'];
-        $id_equipa = $_POST['id_equipa'] ?? NULL; // `id_equipa` é opcional e pode ser NULL
+        $id_equipa = $_POST['id_equipa'];
 
         // Validações adicionais
-        if (!is_numeric($idade) || !is_numeric($id_clube)) {
+        if (!is_numeric($idade) || !is_numeric($id_equipa)) {
             echo "<div class='alert alert-danger'>Parâmetros inválidos</div>";
         } else {
-
             $link = connect_db();
             // Query para adicionar o jogador
-            $sql = "INSERT INTO jogadores (first_name, last_name, idade, genero, posicao, id_clube, id_equipa, created_at) 
-                    VALUES (:first_name, :last_name, :idade, :genero, :posicao, :id_clube, :id_equipa, NOW())";
+            $sql = "INSERT INTO jogadores (first_name, last_name, idade, genero, posicao, id_equipa, created_at) 
+                    VALUES (:first_name, :last_name, :idade, :genero, :posicao, :id_equipa, NOW())";
 
             try {
                 $stmt = $link->prepare($sql);
@@ -63,7 +54,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt->bindParam(':idade', $idade, PDO::PARAM_INT);
                 $stmt->bindParam(':genero', $genero, PDO::PARAM_STR);
                 $stmt->bindParam(':posicao', $posicao, PDO::PARAM_STR);
-                $stmt->bindParam(':id_clube', $id_clube, PDO::PARAM_INT);
                 $stmt->bindParam(':id_equipa', $id_equipa, PDO::PARAM_INT);
                 $stmt->execute();
 
@@ -130,20 +120,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </select>
             </div>
             <div class="mb-3">
-                <label for="clube" class="form-label">Clube</label>
-                <select id="id_clube" name="id_clube" class="form-control" required>
-                    <option value="">Selecione um clube</option>
-                    <?php foreach ($clubes as $id => $nome): ?>
-                        <option value="<?= $id ?>"><?= htmlspecialchars($nome) ?></option>
-                    <?php endforeach; ?>
-
-                </select>
-            </div>
-            <div class="mb-3">
                 <label for="equipa" class="form-label">Equipa</label>
-                <select id="equipa" name="id_equipa" class="form-control">
+                <select id="equipa" name="id_equipa" class="form-control" required>
+                    <option value="">Selecione uma equipa</option>
                     <?php foreach ($equipas as $equipa): ?>
-                        <option value="<?= $equipa['id'] ?>" data-clube="<?= $equipa['clube_id'] ?>">
+                        <option value="<?= $equipa['id'] ?>">
                             <?= htmlspecialchars($equipa['nome']) ?>
                         </option>
                     <?php endforeach; ?>

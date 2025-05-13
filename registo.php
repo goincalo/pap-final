@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php endif; ?>
                 <form method="POST" action="">
                     <div class="mb-3">
-                        <label for="nome" class="form-label">Nome de Usuário</label>
+                        <label for="nome" class="form-label">Nome de utilizador</label>
                         <input type="text" name="nome" id="nome" class="form-control" required>
                     </div>
                     <div class="mb-3">
@@ -91,7 +91,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <option value="">Selecione</option>
                             <option value="administrador">Administrador</option>
                             <option value="treinador">Treinador</option>
-                            <option valeu="utilizador">Utilizador</option>
                         </select>
                     </div>
                     <button type="submit" class="btn btn-primary w-100">Criar Conta</button>

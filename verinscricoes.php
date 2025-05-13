@@ -2,14 +2,19 @@
 require(__DIR__ . '/config.php');
 include 'includes/header.php';
 
-// Consulta para obter todas as inscrições
+// Verifica se a sessão foi iniciada
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Conexão à base de dados
 $link = connect_db();
 $sql = "SELECT * FROM inscricoes";
-
 $stmt = $link->query($sql);
-
-// Verificar se há resultados
 $inscricoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Verifica se o usuário é administrador
+$isAdmin = isset($_SESSION['cargo']) && $_SESSION['cargo'] === 'administrador';
 ?>
 
 <!DOCTYPE html>
@@ -27,80 +32,70 @@ $inscricoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <div class="container mt-5">
         <h1 class="text-center mb-4">Lista de Inscrições</h1>
 
-        <?php
-        // Verifica se o usuário é administrador
-        $isAdmin = isset($_SESSION['cargo']) && $_SESSION['cargo'] === 'administrador';
-        ?>
-
-        <?php if ($inscricoes): ?>
-            <table id="inscricoesTable" class="table table-striped table-bordered">
-                <thead class="table-dark">
-                    <tr>
-                        <th>ID</th>
-                        <th>Nome</th>
-                        <th>Idade</th>
-                        <th>Posição</th>
-                        <th>Contacto do Responsável</th>
-                        <th>Contacto do Atleta</th>
-                        <th>Data da Inscrição</th>
-                        <th>Ações</th> <!-- Nova coluna para ações -->
-                    </tr>
-                </thead>
-                <tbody>
+        <table id="inscricoesTable" class="table table-striped table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Idade</th>
+                    <th>Posição</th>
+                    <th>Contacto do Responsável</th>
+                    <th>Contacto do Atleta</th>
+                    <th>Data da Inscrição</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (count($inscricoes) > 0): ?>
                     <?php foreach ($inscricoes as $row): ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($row["id"]); ?></td>
-                            <td><?php echo htmlspecialchars($row["nome"]); ?></td>
-                            <td><?php echo htmlspecialchars($row["idade"]); ?></td>
-                            <td><?php echo htmlspecialchars($row["posicao"]); ?></td>
-                            <td><?php echo htmlspecialchars($row["contacto_pai"]); ?></td>
-                            <td><?php echo htmlspecialchars($row["contacto_atleta"]); ?></td>
-                            <td><?php echo htmlspecialchars($row["data_inscricao"]); ?></td>
+                            <td><?= htmlspecialchars($row["id"]) ?></td>
+                            <td><?= htmlspecialchars($row["nome"]) ?></td>
+                            <td><?= htmlspecialchars($row["idade"]) ?></td>
+                            <td><?= htmlspecialchars($row["posicao"]) ?></td>
+                            <td><?= htmlspecialchars($row["contacto_pai"]) ?></td>
+                            <td><?= htmlspecialchars($row["contacto_atleta"]) ?></td>
+                            <td><?= htmlspecialchars($row["data_inscricao"]) ?></td>
                             <td>
-
-                                <?php
-                                if ($isAdmin) {
-                                    echo "<button class='btn btn-danger btn-sm remover' data-id='{$row['id']}'>Remover</button>";
-
-                                    echo "</td>
-                            </tr>";
-                                } else {
-                                    echo "<tr><td colspan='9' class='text-center'>Sem dados para exibir</td></tr>";
-                                }
-                                ?>
+                                <?php if ($isAdmin): ?>
+                                    <button class="btn btn-danger btn-sm remover" data-id="<?= $row["id"] ?>">Remover</button>
+                                <?php else: ?>
+                                    <span class="text-muted">Sem ações</span>
+                                <?php endif; ?>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
-                </tbody>
-            </table>
-        <?php else: ?>
-            <p class="text-center">Nenhuma inscrição encontrada.</p>
-        <?php endif; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="8" class="text-center">Nenhuma inscrição encontrada.</td>
+                    </tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
     </div>
 
     <script src="public/JS/jquery.js"></script>
     <script src="includes/datatables/datatables.js"></script>
     <script src="public/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             $('#inscricoesTable').DataTable({
                 language: {
-                    url: "includes/datatables/langconfig.json" // Configuração de idioma
+                    url: "includes/datatables/langconfig.json"
                 },
                 responsive: true
             });
 
-            // Função para remover inscrição
-            $(document).on('click', '.remover', function() {
+            // Ação de remover
+            $(document).on('click', '.remover', function () {
                 let id = $(this).data('id');
 
                 if (confirm('Tem certeza que deseja remover esta inscrição?')) {
                     $.ajax({
-                        url: 'remover_inscricao.php', // Arquivo para processar a remoção
+                        url: 'remover_inscricao.php',
                         method: 'POST',
-                        data: {
-                            id: id
-                        },
-                        success: function(response) {
+                        data: { id: id },
+                        success: function (response) {
                             let result = JSON.parse(response);
                             if (result.success) {
                                 alert('Inscrição removida com sucesso!');
@@ -109,7 +104,7 @@ $inscricoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 alert('Erro ao remover inscrição: ' + result.message);
                             }
                         },
-                        error: function() {
+                        error: function () {
                             alert('Erro ao processar a solicitação.');
                         }
                     });

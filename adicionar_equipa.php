@@ -55,7 +55,7 @@ try {
                     <option value="Em Formação">Em Formação</option>
                 </select>
             </div>
-            <div class="mb-3">
+            <!-- <div class="mb-3">
                 <label for="id_clube" class="form-label">Clube</label>
                 <select id="id_clube" name="id_clube" class="form-control" required>
                     <option value="">Selecione um clube</option>
@@ -63,7 +63,7 @@ try {
                         <option value="<?php echo $clube['id']; ?>"><?php echo htmlspecialchars($clube['nome']); ?></option>
                     <?php endforeach; ?>
                 </select>
-            </div>
+            </div> -->
             <div class="mb-3">
                 <label for="nome_treinador" class="form-label">Nome do Treinador</label>
                 <input type="text" id="nome_treinador" name="nome_treinador" class="form-control" required>

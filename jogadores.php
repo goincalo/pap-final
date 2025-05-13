@@ -3,8 +3,7 @@
 require(__DIR__ . '/config.php');
 include 'includes/header.php';
 
-// Query com INNER JOIN para buscar os dados dos jogadores e seus clubes
-
+// Query com INNER JOIN para buscar os dados dos jogadores e suas equipas
 $sql = "SELECT 
             jogadores.id,
             jogadores.first_name,
@@ -12,13 +11,10 @@ $sql = "SELECT
             jogadores.idade,
             jogadores.genero,
             jogadores.posicao,
-            jogadores.id_clube,
             jogadores.id_equipa,
-            clubes.nome AS clube_nome,
             equipas.nome AS equipa_nome,
             jogadores.created_at
         FROM jogadores
-        INNER JOIN clubes ON jogadores.id_clube = clubes.id
         LEFT JOIN equipas ON jogadores.id_equipa = equipas.id";
 
 try {
@@ -26,15 +22,9 @@ try {
     $link = connect_db();
 
     // Buscar as equipas para preencher o dropdown
-try {
     $stmtEquipas = $link->query("SELECT id, nome FROM equipas");
     $equipas = $stmtEquipas->fetchAll(PDO::FETCH_ASSOC);
-} catch (Exception $e) {
-    echo "Erro ao buscar equipas: " . $e->getMessage();
-    exit();
-}
 
-    
     $stmt = $link->prepare($sql);
     $stmt->execute();
     $result = $stmt->fetchAll(PDO::FETCH_ASSOC); // Obtém os dados como array associativo
@@ -49,7 +39,12 @@ try {
 
 <div class="container mt-5">
     <h1 class="text-center mb-4">Lista de Jogadores</h1>
+    <?php
+        // Verifica se o usuário é administrador
+        $isAdmin = isset($_SESSION['cargo']) && $_SESSION['cargo'] === 'administrador';
+        if ($isAdmin): ?>
     <a href="adicionar_jogador.php" class="btn btn-success btn-sm" style="margin-bottom:20px">Adicionar Jogador</a>
+    <?php endif; ?>
     <hr>
     <table id="jogadoresTable" class="table table-striped table-bordered">
         <thead class="table-dark">
@@ -59,14 +54,12 @@ try {
                 <th>Idade</th>
                 <th>Género</th>
                 <th>Posição</th>
-                <th>Clube</th>
                 <th>Equipa</th>
                 <th>Data de Criação</th>
                 <th>Ações</th>
             </tr>
         </thead>
         <tbody>
-
             <?php
             // Verifica se o usuário é administrador
             $isAdmin = isset($_SESSION['cargo']) && $_SESSION['cargo'] === 'administrador';
@@ -80,7 +73,6 @@ try {
                             <td>{$row['idade']}</td>
                             <td>{$row['genero']}</td>
                             <td>{$row['posicao']}</td>
-                            <td>{$row['clube_nome']}</td>
                             <td>" . (!empty($row['equipa_nome']) ? $row['equipa_nome'] : 'Nenhuma') . "</td>
                             <td>{$row['created_at']}</td>
                             <td>";
@@ -94,7 +86,7 @@ try {
                   </tr>";
                 }
             } else {
-                echo "<tr><td colspan='9' class='text-center'>Sem dados para exibir</td></tr>";
+                echo "<tr><td colspan='8' class='text-center'>Sem dados para exibir</td></tr>";
             }
             ?>
         </tbody>
@@ -127,41 +119,30 @@ try {
                                 <option value="Feminino">Feminino</option>
                                 <option value="Outro">Outro</option>
                             </select>
-
                         </div>
                         <div class="mb-3">
-                            <div class="mb-3">
-                                <label for="editPosicao" class="form-label">Posição</label>
-                                <select id="posicao" name="posicao" class="form-control" required>
-                                    <option value="">Selecione uma posição</option>
-                                    <option>Guarda-Redes</option>
-                                    <option>Ponta de Lança</option>
-                                    <option>Lateral Direito</option>
-                                    <option>Lateral Esquerdo</option>
-                                    <option>medio defensivo</option>
-                                    <option>Meio campo</option>
-                                    <option>Estremo Direito</option>
-                                    <option>Estremo Esquerdo</option>
-                                    <option>Atacante</option>
-                                    <option>Defesa</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="editClube" class="form-label">Clube</label>
-                            <!-- Clube fixado como Viseu United -->
-                            <select id="editClube" name="id_clube" class="form-control" required>
-                                <option value="1">Viseu United</option>
+                            <label for="editPosicao" class="form-label">Posição</label>
+                            <select id="editPosicao" name="posicao" class="form-control" required>
+                                <option value="">Selecione uma posição</option>
+                                <option>Guarda-Redes</option>
+                                <option>Ponta de Lança</option>
+                                <option>Lateral Direito</option>
+                                <option>Lateral Esquerdo</option>
+                                <option>Médio Defensivo</option>
+                                <option>Meio Campo</option>
+                                <option>Extremo Direito</option>
+                                <option>Extremo Esquerdo</option>
+                                <option>Atacante</option>
+                                <option>Defesa</option>
                             </select>
                         </div>
                         <div class="mb-3">
-                        <label for="equipa" class="form-label">Equipa</label>
-                        <select id="id_equipa" name="id_equipa" class="form-control">
-                        <?php foreach ($equipas as $equipa): ?>
-                            <option value="<?php echo $equipa['id']; ?>"><?php echo htmlspecialchars($equipa['nome']); ?></option>
-                        <?php endforeach; ?>
-
-                        </select>
+                            <label for="equipa" class="form-label">Equipa</label>
+                            <select id="id_equipa" name="id_equipa" class="form-control">
+                                <?php foreach ($equipas as $equipa): ?>
+                                    <option value="<?php echo $equipa['id']; ?>"><?php echo htmlspecialchars($equipa['nome']); ?></option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
                         <button type="submit" class="btn btn-primary">Salvar</button>
                     </form>
